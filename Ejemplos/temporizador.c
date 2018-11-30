@@ -17,13 +17,17 @@ typedef unsigned int bytes2;
 typedef unsigned long bytes4;
 
 bytes4 nDisparosOC1 = 0;
+
+bytes4 nDisparosOC0_inicial;
+bytes4 nDisparosOC0 = 0;
+
 //Nº máximo desbordamientos 2⁸
 bytes4 nDesbordamientos = 0UL;
 
 
 
 void (*runAfterUsg_f)(void);
-
+void (*runEveryUsg_f)(void);
 
 
 void __attribute__((interrupt)) vi_tov(void) {
@@ -32,16 +36,24 @@ void __attribute__((interrupt)) vi_tov(void) {
 	_io_ports[M6812_TFLG2] |= M6812B_TOF;
 }
 
-//void __attribute__((interrupt)) vi_ioc0(void){
+void __attribute__((interrupt)) vi_ioc0(void){
+	if(nDisparosOC0 == 0){
+		(*runEveryUsg_f)();
+		nDisparosOC0 = nDisparosOC0_inicial;
+	}
+	else{
+		nDisparosOC0--;
+	}
+	_io_ports[M6812_TFLG1] = M6812B_C0F; /*Bajamos el banderín  */
 
-//}
+}
 
 void __attribute__((interrupt)) vi_ioc1(void) {
 	//Ejecutar la funcion periódica y la que se ejecuta tras un tiempo
 	//(*runAfterUsg_f)();
 	//Dejar de usar comparador de salida
 	if(nDisparosOC1 == 0){
-		serial_print("a\n");
+		(*runAfterUsg_f)();
 		_io_ports[M6812_TMSK1] &= ~M6812B_C1F; //Dejar de usar interrupciones
 	}
 	else{
@@ -184,10 +196,47 @@ void runAfterUsg(void (*f)(void), bytes4 useg){
 
 }
 //Funcion que se ejecuta periódicamente
-//void runEveryUsg(function, bytes4);
+void runEveryUsg(void (*f)(void), bytes4 useg){
+	//guardar function en variable global
+	runEveryUsg_f = f;
+
+	bytes2 numCiclos;
+	bytes4 numCiclosL;
+	//Poner delay en el comparador de salida
+	_io_ports[M6812_TCTL2] &= ~(M6812B_OM0 | M6812B_OL0);
+	/* Vemos velocidad del temporizador*/
+	byte factorT = _io_ports[M6812_TMSK2] & 0x07; /*Factor de escalado actual*/
+	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT); /* Frecuencia del temporizador*/
+	/* Según la frecuencia elegimos el modo de dividir para evitar desbordamientos */
+	if(frec/1000000)
+	numCiclosL = frec/1000000 * useg;
+	else
+	numCiclosL = frec/100 * useg/10000;
+
+	//NDisparosOC0 = variable global
+	nDisparosOC0 = numCiclosL >> 16;  /* Numero de disparos necesarios */
+	nDisparosOC0_inicial = nDisparosOC0;
+	numCiclos = numCiclosL & 0xffff; /* Número restante de ciclos */
+
+	/* Por si escalado muy grande y useg pequeño */
+	if((numCiclos == 0) && (nDisparosOC0 == 0)) numCiclos = 1;
+
+	_io_ports[M6812_TMSK1] |= M6812B_C0I;
+	_io_ports[M6812_TIOS] |= M6812B_IOS0; /*configuramos canal como comparador salida*/
+	_io_ports[M6812_TFLG1] = M6812B_C0F; /*Bajamos el banderín  */
+	/*preparamos disparo*/
+	_IO_PORTS_W(M6812_TC0) = _IO_PORTS_W(M6812_TCNT) + numCiclos ;
+
+	//Cuando se dispare
+
+}
 
 void funcionEjemplo(void){
 	serial_print("a\n");
+}
+
+void funcionEjemplo2(void){
+	serial_print("b\n");
 }
 
 int main () {
@@ -216,7 +265,8 @@ int main () {
 
 	print4bWord(get_microseconds());
 	runAfterUsg(&funcionEjemplo, 1000UL*2000UL);
-	serial_print("Si la a se imprime abajo (tras 2 segundos) está funcionando\n");
+	runEveryUsg(&funcionEjemplo2, 1000UL*3000UL);
+	serial_print("Si la a y la b se imprime abajo (tras 2 segundos) está funcionando\n");
 	delayusg(1000UL*1000UL);
 	print4bWord(get_microseconds());
 
