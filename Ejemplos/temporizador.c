@@ -16,8 +16,11 @@ typedef unsigned char byte;
 typedef unsigned int bytes2;
 typedef unsigned long bytes4;
 
+bytes4 nDisparosOC1 = 0;
 //Nº máximo desbordamientos 2⁸
 bytes4 nDesbordamientos = 0UL;
+
+
 
 void (*runAfterUsg_f)(void);
 
@@ -37,8 +40,14 @@ void __attribute__((interrupt)) vi_ioc1(void) {
 	//Ejecutar la funcion periódica y la que se ejecuta tras un tiempo
 	//(*runAfterUsg_f)();
 	//Dejar de usar comparador de salida
-	_io_ports[M6812_TIOS] &= ~M6812B_IOS1;
-	serial_print("a\n");
+	if(nDisparosOC1 == 0){
+		serial_print("a\n");
+	}
+	else{
+		nDisparosOC1--;
+	}
+
+	_io_ports[M6812_TIOS] |= M6812B_IOS1;
 }
 
 
@@ -139,9 +148,13 @@ void print4bWord(bytes4 word){
 
 //Funcion que se ejecuta tras un tiempo determinado
 void runAfterUsg(void (*f)(void), bytes4 useg){
+	//guardar function en variable global
+	runAfterUsg_f = f;
+
 	bytes2 numCiclos;
 	bytes4 numCiclosL;
 	//Poner delay en el comparador de salida
+	_io_ports[M6812_TCTL2] &= ~(M6812B_OM1 | M6812B_OL1);
 	/* Vemos velocidad del temporizador*/
 	byte factorT = _io_ports[M6812_TMSK2] & 0x07; /*Factor de escalado actual*/
 	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT); /* Frecuencia del temporizador*/
@@ -151,12 +164,14 @@ void runAfterUsg(void (*f)(void), bytes4 useg){
 	else
 	numCiclosL = frec/100 * useg/10000;
 
-	unsigned int numDisparos = numCiclosL >> 16;  /* Numero de disparos necesarios */
+	//NDisparosOC1 = variable global
+	nDisparosOC1 = numCiclosL >> 16;  /* Numero de disparos necesarios */
 	numCiclos = numCiclosL & 0xffff; /* Número restante de ciclos */
 
 	/* Por si escalado muy grande y useg pequeño */
-	if((numCiclos == 0) && (numDisparos == 0)) numCiclos = 1;
+	if((numCiclos == 0) && (nDisparosOC1 == 0)) numCiclos = 1;
 
+	_io_ports[M6812_TMSK1] |= M6812B_C1I;
 	_io_ports[M6812_TIOS] |= M6812B_IOS1; /*configuramos canal como comparador salida*/
 	_io_ports[M6812_TFLG1] = M6812B_C1F; /*Bajamos el banderín  */
 	/*preparamos disparo*/
@@ -164,8 +179,6 @@ void runAfterUsg(void (*f)(void), bytes4 useg){
 
 	//Cuando se dispare
 
-	//guardar function en variable global
-	runAfterUsg_f = f;
 }
 //Funcion que se ejecuta periódicamente
 //void runEveryUsg(function, bytes4);
@@ -199,17 +212,19 @@ int main () {
 
 
 	print4bWord(get_microseconds());
-	runAfterUsg(&funcionEjemplo, 2800);
-	serial_print("Si la a se imprime abajo está funcionando\n");
+	runAfterUsg(&funcionEjemplo, 1000UL*2000UL);
+	serial_print("Si la a se imprime abajo (tras 2 segundos) está funcionando\n");
 	delayusg(1000UL*1000UL);
 	print4bWord(get_microseconds());
+
 
 	while(1){
 		/*Invertimos el led*/
 		_io_ports[M6812_PORTG] ^= M6812B_PG7;
+
 		print4bWord(get_microseconds());
 
-		delayusg(1000UL * 1000UL);
+		delayusg(5000UL * 1000UL);
 	}
 
 
