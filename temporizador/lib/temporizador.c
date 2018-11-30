@@ -31,7 +31,7 @@ void __attribute__((interrupt)) vi_ioc0(void){
 void __attribute__((interrupt)) vi_ioc1(void) {
 	if(nDisparosOC1 == 0){
 		(*runAfterUsg_f)();
-		_io_ports[M6812_TMSK1] &= ~M6812B_C1F;
+		_io_ports[M6812_TMSK1] &= ~M6812B_C1I;
 	}
 	else{
 		nDisparosOC1--;
