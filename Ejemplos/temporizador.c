@@ -29,15 +29,16 @@ void __attribute__((interrupt)) vi_tov(void) {
 	_io_ports[M6812_TFLG2] |= M6812B_TOF;
 }
 
-void __atribute__((interrupt)) vi_ioc0(void){
+//void __attribute__((interrupt)) vi_ioc0(void){
 
-}
+//}
 
-void __atribute__((interrupt)) vi_ioc1(void){
+void __attribute__((interrupt)) vi_ioc1(void) {
 	//Ejecutar la funcion periódica y la que se ejecuta tras un tiempo
-	(*runAfterUsg_f)();
+	//(*runAfterUsg_f)();
 	//Dejar de usar comparador de salida
-	_io_ports[M6812_TIOS] &= ~M6812M6812B_IOS1;
+	_io_ports[M6812_TIOS] &= ~M6812B_IOS1;
+	serial_print("a\n");
 }
 
 
@@ -127,8 +128,8 @@ void delayusg(unsigned long useg) {
 
 //Mostrar por pantalla
 void print4bWord(bytes4 word){
-	bytes2 superior = word >> 16;
-	bytes2 inferior = word;
+	bytes2 m1 = word >> 16;
+	bytes2 m2 = word;
 
 	serial_print("0x");
 	serial_printhexword(m1);
@@ -137,7 +138,9 @@ void print4bWord(bytes4 word){
 }
 
 //Funcion que se ejecuta tras un tiempo determinado
-void runAfterUsg(void (*f)(void), bytes4 delay){
+void runAfterUsg(void (*f)(void), bytes4 useg){
+	bytes2 numCiclos;
+	bytes4 numCiclosL;
 	//Poner delay en el comparador de salida
 	/* Vemos velocidad del temporizador*/
 	byte factorT = _io_ports[M6812_TMSK2] & 0x07; /*Factor de escalado actual*/
@@ -165,7 +168,7 @@ void runAfterUsg(void (*f)(void), bytes4 delay){
 	runAfterUsg_f = f;
 }
 //Funcion que se ejecuta periódicamente
-void runEveryUsg(function, bytes4);
+//void runEveryUsg(function, bytes4);
 
 void funcionEjemplo(void){
 	serial_print("a\n");
