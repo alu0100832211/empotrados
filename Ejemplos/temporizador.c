@@ -22,35 +22,42 @@ bytes4 nDesbordamientos = 0UL;
 
 void __attribute__((interrupt)) vi_tov(void) {
 	nDesbordamientos++;
-	//TFLG2
 	//TSCR:TFFCA esta inicializado a 0
-	_io_ports[M6812_TFLG2] = M6812B_TOF;
+	_io_ports[M6812_TFLG2] |= M6812B_TOF;
 }
+
+void __atribute__((interrupt)) COMPARADORSALIDA(void){
+    //Ejecutar la funcion periódica y la que se ejecuta tras un tiempo
+}
+
 
 void init_temporizador(void){ //futuro: en vez de void int factor
 	//inicializar flag
 	_io_ports[M6812_TSCR] &= ~M6812B_TFFCA;
-	//poner contador a 0
-	_IO_PORTS_W(M6812_TCNT) = 0;
 	//habilitar temporizador por si no lo está
 	_io_ports[M6812_TSCR] |= M6812B_TEN;
+	//El temporizador se para cuando el sistema entra en wait
+	//_io_ports[M6812_TSCR] |= M6812B_TWAI;
 	/* Desconectamos para no afectar al pin */
 	_io_ports[M6812_TCTL1] &= ~(M6812B_OM6 | M6812B_OL6);
 	//Darle factor al reloj lo mas lento posible 111 = 7
 	_io_ports[M6812_TMSK2] = (M6812B_PR2 | M6812B_PR1 | M6812B_PR0);
+	//Desactivar reseteo contador en disparo de OC7
+	//_io_ports[M6812_TMSK2] &= ~M6812B_TCRE;
 	//Habilitar las interrupciones de desbordamiento
 	_io_ports[M6812_TMSK2] |= M6812B_TOI;
+	//poner contador a 0
+	_IO_PORTS_W(M6812_TCNT) = 0;
 }
 
 //Devuelve los microsegundos quehan pasado
 bytes4 get_microseconds(void){
     //Obtenemos el factor de frecuencia
 	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
-    //Frecuencia es frecuencia total(8MHz)/2^factor
-	//bytes4 frec = M6812_CPU_E_CLOCK/(1<<factorT);		
     //Numero de ciclos total es el valor actual del contador
     //concatenado por la izquierda con el nº desbordamientos
-	bytes4  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCTL1);
+	//bytes4  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCTL1);
+	bytes4  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCNT);
     //Microsegundos depende del factor
     int desp = 3 - factorT;
     //bytes4 microSeconds;
@@ -70,7 +77,6 @@ bytes4 get_miliseconds(void){
 }
 
 //Metodo para realizar esperas solicitadas -> el del ejemplo
-
 void delayusg(unsigned long useg) {
   unsigned int numCiclos;
   unsigned long numCiclosL;
@@ -110,41 +116,20 @@ void delayusg(unsigned long useg) {
 }
 
 //Mostrar por pantalla
+void print4bWord(bytes4 word){
+    bytes2 superior = word >> 16;
+    bytes2 inferior = word;
 
-void print_ms(void) {
- 
-    bytes4 p = get_microseconds();
-    bytes2 m1 = p >> 16;
-    bytes2 m2 = p;
-    
-    serial_print("\n0x");
+    serial_print("0x");
     serial_printhexword(m1);
     serial_printhexword(m2);
+    serial_print("\n");
 }
 
-void print_ciclos(){
-    
-    //bytes4 numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCTL1);
-    
-    bytes2 m1 = _IO_PORTS_W(M6812_TCTL1);
-    
-    serial_print("\n0x");
-    serial_printhexword(nDesbordamientos);
-    serial_printhexword(m1);
-    
-}
- 
-
-//Instalar funcion que se ejecute tras tiempo especificado
-
-
-
-//Instalar funcion que se realice periódicamente
-
-
-
-
-//Main
+//Funcion que se ejecuta tras un tiempo determinado
+void runAfterUsg(function, bytes4);
+//Funcion que se ejecuta periódicamente
+void runEveryUsg(function, bytes4);
 
 int main () {
 
@@ -172,8 +157,7 @@ int main () {
   while(1){
     /*Invertimos el led*/
     _io_ports[M6812_PORTG] ^= M6812B_PG7;
-    print_ciclos();
-    print_ms();
+    print4bWord(get_microseconds());
     delayusg(1000UL * 1000UL);
   }
   
