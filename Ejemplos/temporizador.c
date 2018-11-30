@@ -42,12 +42,15 @@ void __attribute__((interrupt)) vi_ioc1(void) {
 	//Dejar de usar comparador de salida
 	if(nDisparosOC1 == 0){
 		serial_print("a\n");
+		_io_ports[M6812_TMSK1] &= ~M6812B_C1F; //Dejar de usar interrupciones
 	}
 	else{
 		nDisparosOC1--;
 	}
 
-	_io_ports[M6812_TIOS] |= M6812B_IOS1;
+	_io_ports[M6812_TFLG1] = M6812B_C1F; /*Bajamos el banderín  */
+
+
 }
 
 
