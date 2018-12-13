@@ -1,3 +1,6 @@
+#ifndef TEMPORIZADOR_H
+#define TEMPORIZADOR_H
+
 #include <sys/param.h>
 #include <sys/interrupts.h>
 #include <sys/sio.h>
@@ -14,3 +17,5 @@ bytes4 get_miliseconds(void);
 void delayusg(unsigned long useg);
 void runAfterUsg(void (*f)(void), bytes4 useg);
 void runEveryUsg(void (*f)(void), bytes4 useg);
+
+#endif 

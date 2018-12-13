@@ -1,5 +1,5 @@
 
-#include "../include/temporizador.h"
+#include "temporizador.c"
 
 void funcionEjemplo(void){
 	serial_print("a\n");
@@ -18,7 +18,7 @@ int main () {
 	serial_init();
 	serial_print("\nDelayUsg.c ============\n");
 
-	init_temporizador();
+	init_temporizador(7);
 
 	unlock();
 

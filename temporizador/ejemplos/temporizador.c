@@ -3,6 +3,9 @@
 Librería para realizar un temporizador
 
 ***********************************************/
+
+#include "../include/temporizador.h"
+
 bytes4 nDisparosOC0_inicial;
 bytes4 nDisparosOC0 = 0;
 bytes4 nDisparosOC1 = 0;
@@ -80,9 +83,10 @@ void delayusg(unsigned long useg) {
 
 	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
 	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
-	numCiclosL = frec/1000000 * useg;
+	if(frec/1000000)
+	  numCiclosL = frec/1000000 * useg;
 	else
-	numCiclosL = frec/100 * useg/10000;
+	  numCiclosL = frec/100 * useg/10000;
 
 	unsigned int numDisparos = numCiclosL >> 16;
 	numCiclos = numCiclosL & 0xffff;
@@ -132,8 +136,6 @@ void runAfterUsg(void (*f)(void), bytes4 useg){
 	_io_ports[M6812_TFLG1] = M6812B_C1F;
 	_IO_PORTS_W(M6812_TC1) = _IO_PORTS_W(M6812_TCNT) + numCiclos;
 	_io_ports[M6812_TMSK1] |= M6812B_C1I;
-
-	return 0;
 }
 
 void runEveryUsg(void (*f)(void), bytes4 useg){
@@ -159,6 +161,4 @@ void runEveryUsg(void (*f)(void), bytes4 useg){
 	_io_ports[M6812_TFLG1] = M6812B_C0F;
 	_IO_PORTS_W(M6812_TC0) = _IO_PORTS_W(M6812_TCNT) + numCiclos ;
 	_io_ports[M6812_TMSK1] |= M6812B_C0I;
-
-	return 0;
 }
