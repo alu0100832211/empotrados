@@ -1,6 +1,6 @@
 /* param.h - Board specific parameters
    Copyright (C) 2000 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)
+   Written by Stephane Carrez (stcarrez@worldnet.fr)	
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -28,55 +28,12 @@ Boston, MA 02111-1307, USA.  */
 #ifndef _SYS_PARAM_H
 #define _SYS_PARAM_H
 
-/*! @defgroup params12 System and Board Parameters for 68HC12
-
-   This section contains several `#``define` to give configuration
-   characteristics of the target board.
-
-*/
-
-/*@{*/
-
-/** CPU Clock frequency.
-
-   Define the frequency of the oscillator plugged on the processor.
-   The value is in hertz.  By default, use 32Mhz.  */
-#ifndef M6812_CPU_CLOCK
-# define M6812_CPU_CLOCK (32000000L)
+#ifdef mc6811
+# include <asm-m68hc11/param.h>
 #endif
 
-/** CPU E clock.
-
-   The E clock frequency.  This frequency is used as the
-   basis for timer computation.  The value is in hertz.  */
-#ifndef M6812_CPU_E_CLOCK
-# define M6812_CPU_E_CLOCK (M6812_CPU_CLOCK / 4)
+#ifdef mc6812
+# include <asm-m68hc12/param.h>
 #endif
-
-#ifndef M6812_CPU_M_CLOCK
-# define M6812_CPU_M_CLOCK (M6812_CPU_E_CLOCK)
-#endif
-
-/** SIO default baud rate.
-
-   Defines the default baud rate of the SIO.  This baud rate
-   is used to configure the M6812_SCxBD register.  */
-#ifndef M6812_DEF_BAUD
-/*# define M6812_DEF_BAUD   (M6812_CPU_M_CLOCK / (16 * 9600L))*/
-# define M6812_DEF_BAUD   (M6812_CPU_M_CLOCK / (16 * 38400L))
-#endif
-
-#ifndef M6812_STDOUT_PORT
-# define M6812_STDOUT_PORT (0)
-#endif
-
-/** Use the 68HC11 COP.
-
-   Define this if you are using the COP timer.
-   This activate the COP reset while polling and writing on
-   the serial line.  */
-#define M6811_USE_COP 0
-
-/*@}*/
 
 #endif

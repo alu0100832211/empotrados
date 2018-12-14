@@ -135,7 +135,7 @@ OBJCOPY_FLAGS=--only-section=.text \
 
 
 %.elf : %.o
-	$(CC) $(LDFLAGS) -o $*.elf $^ $(LIBS)
+	$(CC) $(LDFLAGS) -o $*.elf $< $(LIBS)
 
 
 

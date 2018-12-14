@@ -1,6 +1,6 @@
-/* Integer Math - the math.h for integer operations
-   Copyright (C) 2001 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)
+/* Locks -- Operations to protect critical sections
+   Copyright (C) 2000 Free Software Foundation, Inc.
+   Written by Stephane Carrez (stcarrez@worldnet.fr)	
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -25,20 +25,15 @@ along with this program; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
-#ifndef _IMATH_H
-#define _IMATH_H
+#ifndef _SYS_LOCKS_H
+#define _SYS_LOCKS_H
 
-/*! @defgroup imath Integer Maths Operations
+#ifdef mc6811
+# include <asm-m68hc11/locks.h>
+#endif
 
-*/
-/*@{*/
-
-extern unsigned long
-lsqrt (unsigned long x);
-
-extern unsigned long long
-lsqrt64 (unsigned long long x);
-
-/*@}*/
+#ifdef mc6812
+# include <asm-m68hc12/locks.h>
+#endif
 
 #endif

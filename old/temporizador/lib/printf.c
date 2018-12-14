@@ -1,6 +1,6 @@
-/* Integer Math - the math.h for integer operations
+/* Simple printf
    Copyright (C) 2001 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)
+   Written by Stephane Carrez (stcarrez@worldnet.fr)	
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -23,22 +23,28 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
-
-#ifndef _IMATH_H
-#define _IMATH_H
-
-/*! @defgroup imath Integer Maths Operations
+Boston, MA 02111-1307, USA.
 
 */
-/*@{*/
 
-extern unsigned long
-lsqrt (unsigned long x);
+#include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <sys/sio.h>
 
-extern unsigned long long
-lsqrt64 (unsigned long long x);
+int
+printf (const char *msg, ...)
+{
+  int result;
+  char buf[80];
+  
+  va_list argp;
 
-/*@}*/
+  va_start (argp, msg);
+  result = vsprintf (buf, msg, argp);
+  va_end (argp);
 
-#endif
+  serial_print (buf);
+  return result;
+}
+

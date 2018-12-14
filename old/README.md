@@ -37,17 +37,3 @@ una tabla de *seudovectores* en direcciones de la `0x07C2` a `0x07FF`
 
 - Los 28 Kb de flash deshabilitando para poder acceder a memoria externa en el rango
 de `0x1000` a `0x7FFF`
-
-## Documentación
-
-El código está documentado utilizando [Doxygen](http://www.doxygen.nl).
-
-Para generar la documentación, ejecutar en la carpeta raiz
-
-```
-doxygen  doc/Doxyfile
-```
-
-La documentación se pude acceder desde el fichero `doc/html/index.html`.
-
-

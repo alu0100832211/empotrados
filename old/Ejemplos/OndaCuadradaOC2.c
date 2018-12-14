@@ -26,11 +26,8 @@ typedef unsigned char byte;  /*por comodidad*/
 /*Pasa de milisegundos a ticks*/
 #define  MSG_2_TICKS(ms)  ((ms) * (TCM_FREQ / 1000L))
 
-/* Iniciamos periodo según microsegundos que queremos que dure */
-/* se hace en tiempo de COMPILACION */
-unsigned short Periodo = USG_2_TICKS(5000); /* Ticks del temporizador que dura el periodo */
-
-unsigned short cuenta_irqs  = 0; /* Se incremente en cada interrupción */
+unsigned short Periodo; /* Ticks del temporizador que dura el periodo */
+unsigned short cuenta_irqs; /* Se incremente en cada interrupción */
 
 
 int main () {
@@ -46,6 +43,10 @@ int main () {
   serial_init();
   serial_print("\r\nOndaCuadradaOC2.c ===========\r\n");
 
+  cuenta_irqs = 0;
+
+  /* Iniciamos periodo según microsegundos que queremos que dure */
+  Periodo = USG_2_TICKS(5000);  /* se hace en tiempo de COMPILACION */
   serial_print("\r\n usg del periodo: ");
   serial_printdecword(Periodo/USG_2_TICKS(1));
 

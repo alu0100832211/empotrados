@@ -1,6 +1,6 @@
 /* Integer Math - the math.h for integer operations
    Copyright (C) 2001 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)
+   Written by Stephane Carrez (stcarrez@worldnet.fr)	
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -28,14 +28,40 @@ Boston, MA 02111-1307, USA.  */
 #ifndef _IMATH_H
 #define _IMATH_H
 
-/*! @defgroup imath Integer Maths Operations
+/*! @defgroup imath Integer Maths Operations.
 
 */
 /*@{*/
 
+/*! Compute the square root of a number.
+
+    This function computes the square root of \a x using integer operations
+    exclusively.  It returns the integer that corresponds to \c sqrt(x).
+
+    <p>
+    This function operates on unsigned numbers and as such it always
+    succeeds.
+
+    @return the square root of x.
+    @see sqrt, lsqrt64
+*/
 extern unsigned long
 lsqrt (unsigned long x);
 
+/*! Compute the square root of a number.
+
+    This function computes the square root of \a x using integer operations
+    exclusively.  It returns the integer that corresponds to \c sqrt(x).
+    \c lsqrt64 deals with 64-bit integers while \c lsqrt only handles
+    32-bit integers.
+
+    <p>
+    This function operates on unsigned numbers and as such it always
+    succeeds.
+
+    @return the square root of x.
+    @see sqrt, lsqrt
+*/
 extern unsigned long long
 lsqrt64 (unsigned long long x);
 

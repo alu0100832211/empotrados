@@ -1,9 +1,7 @@
-/*! \file
-
-  Programa ejemplo de manejo de la serial SCI
-
-  Realiza el eco de lo que le llega, devolviendolo con las
-  mayusculas invertidas
+/* ************************************************************
+* Programa ejemplo de manejo de la serial SCI
+*  Realiza el eco de lo que le llega, devolviendolo con las
+*  mayusculas invertidas
 
   Copyright (C) Alberto F. Hamilton Castro
   Dpto. de Ingeniería Informática de Sistemas
@@ -11,7 +9,7 @@
 
   Licencia: GPLv3
 
-*/
+***************************************** */
 
 
 #include <sys/param.h>

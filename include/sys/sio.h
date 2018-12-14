@@ -24,27 +24,115 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  *
 #include <sys/param.h>
 #include <sys/ports.h>
 
-#ifdef mc6811
-# include <asm-m68hc11/sio.h>
+#if M6812_STDOUT_PORT == 0
+# define M6812_SCBD   M6812_SC0BDH
+# define M6812_SCCR1  M6812_SC0CR1
+# define M6812_SCCR2  M6812_SC0CR2
+# define M6812_SCSR1  M6812_SC0SR1
+# define M6812_SCDR   M6812_SC0DRL
+#elif M6812_STDOUT_PORT == 1
+# define M6812_SCBD   M6812_SC1BDH
+# define M6812_SCCR1  M6812_SC1CR1
+# define M6812_SCCR2  M6812_SC1CR2
+# define M6812_SCSR1  M6812_SC1SR1
+# define M6812_SCDR   M6812_SC1DRL
+#else
+# error "M6812_STDOUT_PORT must be defined to either 0 or 1"
 #endif
 
-#ifdef mc6812
-# include <asm-m68hc12/sio.h>
-#endif
 
-extern void serial_init (void);
+/*! @defgroup sio Serial Input Output
 
-/* Return != 0 if there is something to read on the serial line.  */
-extern unsigned char serial_receive_pending (void);
+  Conjunto de funciones que facilitan la interacción a través de la serial.
+  Evintan el uso del `printf()` y `scanf()` definiendo funciones específicas
+  para la lectura y escritura de datos de tipos enteros concretos.
 
-/* Wait until the SIO has finished to send the character.  */
-extern void serial_flush (void);
+ */
+/*@{*/
 
-/* Send the character on the serial line.  */
-extern void serial_send (char c);
+/*! Initialize the SCI.
 
-/* Wait for a character on the serial line and return it.  */
-extern unsigned char serial_recv (void);
+    This function configures the SCI to send at `M6811_DEF_BAUD` baud
+    rate.  It must be called before any other serial operation unless
+    the program is started from another one (such as a monitor or
+    in bootstrap mode).
+
+    @see serial_print, M6811_DEF_BAUD
+*/
+extern inline void serial_init (void)
+{
+  ((unsigned volatile short*) &_io_ports[M6812_SCBD])[0] = M6812_DEF_BAUD;
+
+  /* Setup character format 1 start, 8-bits, 1 stop.  */
+  _io_ports[M6812_SCCR1] = 0;
+
+  /* Enable reciever and transmitter.  */
+  _io_ports[M6812_SCCR2] = 0xc;
+}
+
+
+/*! Test for pending character on the reception.
+
+    Return != 0 if there is something to read on the serial line.
+
+    @return 1 if there is something to read on the serial line.
+*/
+extern inline unsigned char serial_receive_pending (void)
+{
+  return _io_ports[M6812_SCSR1] & M6812B_RDRF;
+}
+
+
+/*! Wait until the SIO has finished to send the character.
+
+    This function waits for the transmission of the current character.
+    While waiting, the COP is reset using \c cop_optional_reset.
+
+    @see cop_optional_reset, serial_init, serial_send
+*/
+extern inline void serial_flush (void)
+{
+  while (!(_io_ports[M6812_SCSR1] & M6812B_TDRE))
+    cop_optional_reset ();
+}
+
+
+/*! Send the character on the serial line.
+
+    This function sends the character \a c on the serial line.
+    Before sending, it calls \c serial_flush to make sure the
+    transmitter is ready.  Once the function returns, the
+    character is in the SCI queue and it may not be sent completely
+    over the serial line.
+
+    @param c character to send on the serial line.
+
+    @see serial_init, serial_flush
+*/
+extern inline void serial_send (char c)
+{
+  serial_flush ();
+  _io_ports[M6812_SCDR] = c;
+  _io_ports[M6812_SCCR2] |= M6812B_TE;
+}
+
+/*! Wait for a character on the serial line and return it.
+
+    This function waits for a character to be received by the SCI.
+    While waiting, it calls \c cop_optional_reset to probe the COP
+    regularly.
+
+    @return the character received from the SCI.
+
+    @see serial_init, cop_optional_reset
+*/
+extern inline unsigned char serial_recv (void)
+{
+  while (!(_io_ports[M6812_SCSR1] & M6812B_RDRF))
+    cop_optional_reset ();
+
+  return _io_ports[M6812_SCDR];
+}
 
 /** Write the string on the serial line.
 
@@ -56,14 +144,16 @@ extern void serial_print (const char *msg);
 
 /** Wait for a string from serial line.
 
-    @param msg buffer that will hold the string.
+    @param buf buffer that will hold the string.
 
     @see serial_init, serial_recv
 */
 extern void serial_getline (char *buf);
 
-/** Espera 8 bits (0s o 1s) por la serial para formar un byte
-    Permite borrar y termina con \n
+/** Espera 8 bits (0s o 1s) por la serial para formar un byte.
+    Permite borrar y termina con \\n
+
+    @return byte con el número binario recibido por la serial
 */
 extern unsigned char serial_getbinbyte();
 
@@ -79,46 +169,63 @@ extern void serial_printbinbyte(unsigned char bt);
 */
 extern void serial_printbinword(unsigned short sa);
 
-/** Espera 2 dígitos exadecimales para formar byte. Permite borrar
-    y termina con \n
+/** Espera 2 dígitos hexadecimales para formar byte. Permite borrar
+    y termina con \\n
+
+    @return devuelve el byte hexadecimal tecleado por el usuario.
+
 */
 extern unsigned char serial_gethexbyte();
 
-/** Espera 4 dígitos exadecimales para formar doble byte. Permite borrar
-    y termina con \n
+/** Espera 4 dígitos hexadecimales para formar doble byte. Permite borrar
+    y termina con \\n
+
+    @return devuelve el word hexadecimal tecleado por el usuario.
+
 */
 extern unsigned short serial_gethexword();
 
-/** Saca por la serial en hexadecimal el byte pasado 
+/** Saca por la serial en hexadecimal el byte pasado
+
     @param bt byte a sacar
+
 */
 extern void serial_printhexbyte(unsigned char bt);
 
-/** Saca por la serial en hexadecimal el doble byte pasado 
-    @param sa doble byte a sacar
+/** Saca por la serial en hexadecimal el doble byte pasado
+
+    @param sa word a sacar
 */
 extern void serial_printhexword(unsigned short sa);
 
 /** Espera por la serial digitos decimales para formar byte sin signo.
-    Permite borrar y termina con \n. Controla desboradmiento.
+    Permite borrar y termina con \\n. Controla desboradmiento.
+
+    @return byte con el número decimal recibido por la serial
 */
 extern unsigned char serial_getdecbyte();
 
 /** Espera por la serial digitos decimales para formar doble byte sin signo.
-    Permite borrar y termina con \n. Controla desboradmiento.
+    Permite borrar y termina con \\n. Controla desboradmiento.
+
+    @return devuelve el byte decimal tecleado por el usuario.
+
 */
 extern unsigned short serial_getdecword();
 
 /** Saca por la serial en decimal doble byte pasado.
-    @param sa doble byte sin signo
+
+    @param sa word a mostar por la serial
+
 */
 extern void serial_printdecword(unsigned short sa);
 
 /** Saca por la serial en decimal byte pasado.
-    @param ba byte sin signo
+
+    @param ba byte a mostar por la serial
 */
 extern void serial_printdecbyte(unsigned char ba);
 
+/*@}*/
 
 #endif /* _SYS_SIO_H */
-

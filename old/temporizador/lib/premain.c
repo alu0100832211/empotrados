@@ -1,6 +1,6 @@
-/* Integer Math - the math.h for integer operations
+/* Pre-main to initialize the serial line.
    Copyright (C) 2001 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)
+   Written by Stephane Carrez (stcarrez@worldnet.fr)	
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -23,22 +23,17 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
-
-#ifndef _IMATH_H
-#define _IMATH_H
-
-/*! @defgroup imath Integer Maths Operations
+Boston, MA 02111-1307, USA.
 
 */
-/*@{*/
 
-extern unsigned long
-lsqrt (unsigned long x);
+#include <sys/sio.h>
+#include <sys/locks.h>
 
-extern unsigned long long
-lsqrt64 (unsigned long long x);
-
-/*@}*/
-
-#endif
+int
+__premain ()
+{
+  restore (0);
+  serial_init ();
+  return 0;
+}

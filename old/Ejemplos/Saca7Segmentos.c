@@ -1,6 +1,10 @@
+
 /* ****************************************
-* Salida onda cuadrada por el OC2
-* Se especifica periondo en variable.
+ *  Programa de manejo del conjunto de 7 segmentos
+ *  de la placa DISEN-EXP
+ * Se suponene conectados los 7 segmentos al puerto H
+ * Es necesario realizar un refresco del orden de 100MHz
+ * para que aprezcan los números estables
 
    Copyright (C) Alberto F. Hamilton Castro
    Dpto. de Ingeniería Informática de Sistemas
@@ -20,18 +24,18 @@
 typedef unsigned char byte;  /*por comodidad*/
 
 #define  TCM_FACTOR (3)  /*La potencia de 2 a aplicar al factor*/
-#define  TCM_FREQ (M6812_CPU_E_CLOCK / (1 << TCM_FACTOR))
+#define  TCM_FREQ (M6812_CPU_E_CLOCK/(1 << TCM_FACTOR))
 /*Pasa de microsegundos a ticks*/
-#define  USG_2_TICKS(us)  ((us) * (TCM_FREQ / 1000000L))
+#define  USG_2_TICKS(us)  ((us) * (TCM_FREQ/1000000L))
 /*Pasa de milisegundos a ticks*/
-#define  MSG_2_TICKS(ms)  ((ms) * (TCM_FREQ / 1000L))
+#define  MSG_2_TICKS(ms)  ((ms) * (TCM_FREQ/1000L))
 
-/* Iniciamos periodo según microsegundos que queremos que dure */
-/* se hace en tiempo de COMPILACION */
-unsigned short Periodo = USG_2_TICKS(5000); /* Ticks del temporizador que dura el periodo */
+unsigned short Periodo;
+unsigned short cuenta_irqs;
 
-unsigned short cuenta_irqs  = 0; /* Se incremente en cada interrupción */
-
+/*Byte que corresponde a cada 7 segmento */
+byte digi7s[4];
+byte da; /* digito actual */
 
 int main () {
 
@@ -44,14 +48,26 @@ int main () {
 
 
   serial_init();
-  serial_print("\r\nOndaCuadradaOC2.c ===========\r\n");
+  serial_print("\nSaca7Segmentos.c =============\n");
 
-  serial_print("\r\n usg del periodo: ");
+  /*Inicializamos las variables */
+  cuenta_irqs = 0;
+  Periodo = USG_2_TICKS(5000);
+  serial_print("\n usg del periodo: ");
   serial_printdecword(Periodo/USG_2_TICKS(1));
+  digi7s[0] = 1;
+  digi7s[1] = 2;
+  digi7s[2] = 3;
+  digi7s[3] = 4;
+  da = 0;
+
+  /* Inicializamos los dispositivos */
+  /*Inicializamos el puerto H*/
+  _io_ports[M6812_DDRH] = 0xff; /*todos los pines como salida*/
+  _io_ports[M6812_PORTH] = 0x91; /*valor inicial*/
 
   /*Inicialización del Temporizador*/
   _io_ports[M6812_TMSK2] = TCM_FACTOR;
-
   /* OC2 Invierte el pin en cada disparo */
   _io_ports[M6812_TCTL2] &= ~M6812B_OM2;
   _io_ports[M6812_TCTL2] |= M6812B_OL2;
@@ -70,39 +86,39 @@ int main () {
 
   unlock(); /* habilitamos interrupciones */
 
-  serial_print("\n\rTerminada inicialización");
+  serial_print("\n\rTerminada inicialización\n");
 
   while(1) {
-    char c;
-    c = serial_recv();
-    //Hacemos eco del caracter recibido
-    serial_send(c);
+    unsigned short nv;
 
-    serial_print("\n\r Cuenta irqs: ");
+    serial_print("\n\n Cuenta irqs: ");
     serial_printdecword(cuenta_irqs);
 
-    if(c == '+') Periodo += 10;
-    if(c == '-') Periodo -= 10;
-
-    serial_print("\n\r Periodo: ");
-    serial_printdecword(Periodo);
-    serial_print("\tusg del periodo: ");
-    serial_printdecword(Periodo / USG_2_TICKS(1));
+    serial_print("\n\nNuevos valores:");
+    nv = serial_gethexword();
+    /*serparamos los dígitos */
+    digi7s[0] = (byte)(nv & 0x0f);
+    digi7s[1] = (byte)((nv >> 4) & 0x0f);
+    digi7s[2] = (byte)((nv >> 8) & 0x0f);
+    digi7s[3] = (byte)((nv >> 12) & 0x0f);
 
     /*Invertimos el led*/
     _io_ports[M6812_PORTG] ^= M6812B_PG7;
-
   }
 }
 
 
 /* Manejador interrupciones del OC2  */
 void __attribute__((interrupt)) vi_ioc2 (void) {
-  _io_ports[M6812_TFLG1] = M6812B_IOS2; /*Bajamos el banderín de OC2 */
+  /*Bajamos el banderín de OC2 */
+  _io_ports[M6812_TFLG1] = M6812B_IOS2;
 
   /*preparamos siguiente disparo*/
   _IO_PORTS_W(M6812_TC2) = _IO_PORTS_W(M6812_TC2) + Periodo;
   cuenta_irqs++;
 
+  /*Refrescamos el display */
+  _io_ports[M6812_PORTH] = (digi7s[da] & 0x0f) | (1 << (da + 4));
+  da = (da + 1) % 4;
 }
 
