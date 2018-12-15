@@ -12,8 +12,10 @@ bytes4 nDisparosOC1 = 0;
 
 bytes4 nDesbordamientos = 0UL;
 
-void (*runAfterUsg_f)(void);
-void (*runEveryUsg_f)(void);
+void * runAfterUsg_args;
+void * runEveryUsg_args;
+void (*runAfterUsg_f)(void *);
+void (*runEveryUsg_f)(void *);
 
 void __attribute__((interrupt)) vi_tov(void) {
 	nDesbordamientos++;
@@ -22,7 +24,7 @@ void __attribute__((interrupt)) vi_tov(void) {
 
 void __attribute__((interrupt)) vi_ioc0(void){
 	if(nDisparosOC0 == 0){
-		(*runEveryUsg_f)();
+		runEveryUsg_f(runEveryUsg_args);
 		nDisparosOC0 = nDisparosOC0_inicial;
 	}
 	else{
@@ -33,7 +35,7 @@ void __attribute__((interrupt)) vi_ioc0(void){
 
 void __attribute__((interrupt)) vi_ioc1(void) {
 	if(nDisparosOC1 == 0){
-		(*runAfterUsg_f)();
+		runAfterUsg_f(runAfterUsg_args);
 		_io_ports[M6812_TMSK1] &= ~M6812B_C1I;
 	}
 	else{
@@ -45,7 +47,7 @@ void __attribute__((interrupt)) vi_ioc1(void) {
 /**
 * @brief Inicializa los flags del contador. Cada vez que se llama se resetea el contador.
 * @param factorT Factor de escalado del procesador. Va de 0 a 7. La frecuencia base del reloj (8MHz) se divide por la potencia de dos elevado al factor de escalado. Ejemplo factoT = 7  8MHz/2⁷ = 16μsg
-* @return
+* IMPORTANTE: De momento, usar un factor distinto de 7 está dando problemas para calcular el tiempo
 */
 void init_temporizador(int factorT){
 	if (factorT > 7){
@@ -64,8 +66,8 @@ void init_temporizador(int factorT){
 }
 
 /**
-* @brief Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
-* @param
+* @brief Tiempo en microsegundos desde la llamada a init
+* Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
 * @return 4bytes que representan el valor hexadecimal
 */
 bytes4 get_microseconds(void){
@@ -139,11 +141,13 @@ void print4bWord(bytes4 word){
 
 /**
 * @brief Ejecuta una función después de un tiempo determiando
+* Ejemplo de uso en 
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runAfterUsg(void (*f)(void), bytes4 useg){
+void runAfterUsg(void (*f)(void *), void * args, bytes4 useg){
 	runAfterUsg_f = f;
+  runAfterUsg_args = args;
 
 	bytes2 numCiclos;
 	bytes4 numCiclosL;
@@ -170,8 +174,9 @@ void runAfterUsg(void (*f)(void), bytes4 useg){
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runEveryUsg(void (*f)(void), bytes4 useg){
+void runEveryUsg(void (*f)(void*), void * args, bytes4 useg){
 	runEveryUsg_f = f;
+  runEveryUsg_args = args;
 
 	bytes2 numCiclos;
 	bytes4 numCiclosL;

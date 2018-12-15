@@ -5,6 +5,7 @@
 
 */
 /*@{*/
+#include <stdlib.h>
 
 #include <sys/param.h>
 #include <sys/interrupts.h>
@@ -55,14 +56,14 @@ void print4bWord(bytes4 word);
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runAfterUsg(void (*f)(void), bytes4 useg);
+void runAfterUsg(void (*f)(void*), void * args, bytes4 useg);
 
 /**
 * @brief Ejecuta una función periodicamente
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runEveryUsg(void (*f)(void), bytes4 useg);
+void runEveryUsg(void (*f)(void*), void * args, bytes4 useg);
 
 /*@}*/
 

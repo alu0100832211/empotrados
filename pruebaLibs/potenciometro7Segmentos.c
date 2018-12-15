@@ -3,12 +3,13 @@
 #include <atd.h>
 #include <cmath>
 /********************** POSIBLES PROBLEMAS *************************************
- * No probamos llamar runEveryUseg runAfterUseg varias veces
- * No probamos llamar runEveryUseg runAfterUseg con argumentos
+ * Probar llamar runEveryUseg runAfterUseg varias veces
+ * Probar llamar runEveryUseg runAfterUseg con argumentos
+ * Probar que la funcion pasada a runEverUseg use una variable global
  ******************************************************************************/
 
 /********************** VARIABLES GLOBALES ************************************/
-int iR7S = 0; //i Refrescar 7 Segmentos
+int n7S = 0; //número 7 segmento (7-segmento que se enciende)
 /******************************************************************************/
 
 void sieteSeg_init(){
@@ -21,13 +22,15 @@ void sieteSeg_init(){
  * 4 bytes. A partir de ese momento se mostrará en cada 7-segmentos valor correspondiente a
  * las primeras 4 posiciones del array pasado.
  */
-void refrescar7Seg(unsigned char* array){
-  _io_ports[M6812_PORTG] = array[iR7S];
-  (iR7S == 4) ? iR7S = 0 : iR7S++;
+void refrescar7Seg(void * array){
+  array = (unsigned char*) array;
+
+  _io_ports[M6812_PORTG] = array[n7S];
+  (n7S == 3) ? n7S = 0 : n7S++;
 }
 
 void sieteSeg_digitos(unsigned char* array){
-  runEveryUsg(refrescar7Seg(array), 1000UL);
+  runEveryUsg(refrescar7Seg, array, 1000UL);
 }
 
 /**
@@ -40,6 +43,7 @@ void sieteSeg_valor(unsigned int numero){
     digitos[i] = numero % 10;
     numero /= 10;
   }
+  
   sieteSeg_digitos(digitos);
 }
 
