@@ -72,6 +72,10 @@ char teclado_getch(){
     }
     _io_ports[M6812_PORTG] |= (1 << i);
   }
+  /* Esperar a soltar la tecla */
+  _io_ports[M6812_PORTG] &= !FIL_M; 
+  while((_io_ports[M6812_PORTH] & COL_M ) != COL_M);
+  delayusg(20000UL);
 
   return teclado[filaPulsacion][colPulsacion];
 }
