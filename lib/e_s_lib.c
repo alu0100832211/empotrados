@@ -32,7 +32,7 @@ int configurar_puerto(const char port_char, const int conf, char* pines){
 	}
 
 	//serial_print("\nPines a asignar: ");
-	//serial_printdecunsigned char(pines);
+	//serial_printdecbyte(pines);
 	//serial_print("\n");
 
 	int i=0;
@@ -187,15 +187,15 @@ unsigned char leer_puerto(const char port_char){
 
 	serial_init();
 	serial_print("Leyendo el puerto ");
-	serial_printbinunsigned char(port_char);
+	serial_printbinbyte(port_char);
 	serial_print("\nBin -> ");
-	serial_printbinunsigned char(_io_ports[port]);
+	serial_printbinbyte(_io_ports[port]);
 	serial_print("\n");
 	serial_print("Hex -> ");
-	serial_printhexunsigned char(_io_ports[port]);
+	serial_printhexbyte(_io_ports[port]);
 	serial_print("\n");
 	serial_print("Dec -> ");
-	serial_printdecunsigned char(_io_ports[port]);
+	serial_printdecbyte(_io_ports[port]);
 	serial_print("\n");
 
 	return port;
@@ -221,9 +221,9 @@ void escribir_puerto(const char port_char, unsigned char value){
 
 	serial_init();
 	serial_print("Escribiendo en el puerto: ");
-	serial_printbinunsigned char(port_char);
+	serial_printbinbyte(port_char);
 	serial_print(" el valor = ");
-	serial_printbinunsigned char(value);
+	serial_printbinbyte(value);
 	serial_print("\n");
 
 	_io_ports[port] = value;

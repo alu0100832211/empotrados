@@ -74,19 +74,16 @@ void sieteSeg_valor(unsigned int numero){
 
 
 int main (void){
-  /* Parte 2
-   * Hacer un programa que lea el valor de uno de 
-   * los potenciómetros y represente en los 7-segmentos 
-   * el valor de la conversión con una resolución de 10 bits.
-   */
-  /* Iniciar la conversión */
-  atd_start_conversion(PUERTO_ATD);
-  /* Esperar a que termine la conversión */
-  atd_wait_for_conversor(PUERTO_ATD);
-  /* Devolver los valores leidos */
-  unsigned short data;
-  unsigned short nConversiones;
+  while(1){
+    /* Iniciar la conversión */
+    atd_start_conversion(PUERTO_ATD);
+    /* Esperar a que termine la conversión */
+    atd_wait_for_conversor(PUERTO_ATD);
+    /* Devolver los valores leidos */
+    unsigned short data;
+    unsigned short nConversiones;
 
-  atd_get_data(&data, &nConversiones, PUERTO_ATD);
-  sieteSeg_valor(data);
+    atd_get_data(&data, &nConversiones, PUERTO_ATD);
+    sieteSeg_valor(data);
+  }
 }

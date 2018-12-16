@@ -52,14 +52,13 @@ char teclado_getch(){
   /* Estabilización del valor 20 msg = 20000 useg*/
   delayusg(20000UL);
   /* Guardar la columna detectada */
-  unsigned char colPulsacion = 0;
-  int i;
-  for(i = 0; i < 3; i++){
-    if(!(_io_ports[M6812_PORTH] & (1<<i))){
-      colPulsacion = i;
-      break;
-    }
+  unsigned char colPulsacion = !(_io_ports[M6812_PORTH] | 0xf0);
+  int i = 0;
+  while(colPulsacion > 1){
+    colPulsacion >> 1;
+    i++;
   }
+  colPulsacion = i;
   /* Escribir 1 en todas las filas */
   _io_ports[M6812_PORTG] |= FIL_M; 
   
@@ -82,7 +81,7 @@ char teclado_getch_timeout(unsigned int milis){
  unsigned long int tActual = get_miliseconds();
  while((tActual-tInicial) < milis){
    tActual = get_miliseconds();
-   if ((_io_ports[M6812_PORTH] & COL_M )!=COL_M) // Si hay pulsacion
+   if ((_io_ports[M6812_PORTH] & COL_M )!=COL_M)
      return teclado_getch();
  }
 
@@ -92,11 +91,12 @@ char teclado_getch_timeout(unsigned int milis){
 int main(void){
   serial_init();
   teclado_init();
+  while(1){
   /* Bits de columnas estan a 1 ??*/
   if (teclado_getch() == 'E')
     serial_print("bits de columnas no están a 1 ERROR!\n");
   else
     serial_print("bits de columnas están a 1\n");
-
+  }
   while(1);
 }
