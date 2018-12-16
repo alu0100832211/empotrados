@@ -1,4 +1,3 @@
-
 #include <temporizador.h>
 
 void funcionEjemplo(void * args){
@@ -7,9 +6,10 @@ void funcionEjemplo(void * args){
 
 void funcionEjemplo2(void * args){
   unsigned char * byte;
-  args = (unsigned char*) args;
+  byte = (unsigned char*) args;
 
   serial_print(*byte);
+  serial_print("\n");
 }
 
 int main () {
@@ -21,16 +21,15 @@ int main () {
   serial_init();
   serial_print("\nDelayUsg.c ============\n");
 
-  init_temporizador(7);
+  init_temporizador(7); 
 
   unlock();
 
   serial_print("\n\rTerminada inicialización\n");
 
-  unsigned char * byte = (unsigned char*)malloc(sizeof(unsigned char));
-  *byte = b;
-  runAfterUsg(funcionEjemplo, NULL, 1000UL*2000UL);
-  runEveryUsg(funcionEjemplo2, byte, 1000UL*3000UL);
+  unsigned char byte = 'b';
+  runAfterUsg(funcionEjemplo, 0, 1000UL*2000UL);
+  runEveryUsg(funcionEjemplo2, (void*) &byte, 1000UL*3000UL);
 
   delayusg(1000UL*1000UL);
   print4bWord(get_microseconds());
@@ -40,6 +39,4 @@ int main () {
     print4bWord(get_microseconds());
     delayusg(5000UL * 1000UL);
   }
-
-  free(byte);
 }

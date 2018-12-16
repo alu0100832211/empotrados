@@ -6,11 +6,11 @@ Librería para realizar un temporizador
 
 #include <temporizador.h>
 
-bytes4 nDisparosOC0_inicial;
-bytes4 nDisparosOC0 = 0;
-bytes4 nDisparosOC1 = 0;
+unsigned long nDisparosOC0_inicial;
+unsigned long nDisparosOC0 = 0;
+unsigned long nDisparosOC1 = 0;
 
-bytes4 nDesbordamientos = 0UL;
+unsigned long nDesbordamientos = 0UL;
 
 void * runAfterUsg_args;
 void * runEveryUsg_args;
@@ -68,11 +68,11 @@ void init_temporizador(int factorT){
 /**
 * @brief Tiempo en microsegundos desde la llamada a init
 * Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
-* @return 4bytes que representan el valor hexadecimal
+* @return 4unsigned chars que representan el valor hexadecimal
 */
-bytes4 get_microseconds(void){
-	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
-	bytes4  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCNT);
+unsigned long get_microseconds(void){
+	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
+	unsigned long  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCNT);
 	int desp = 3 - factorT;
 	if (desp > 0){
 		return numCiclos >> desp;
@@ -85,9 +85,9 @@ bytes4 get_microseconds(void){
 
 /**
 * @brief Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
-* @return 4 bytes que representan el valor hexadecimal
+* @return 4 unsigned chars que representan el valor hexadecimal
 */
-bytes4 get_miliseconds(void){
+unsigned long get_miliseconds(void){
 	return get_microseconds() * 1000;
 }
 
@@ -102,7 +102,7 @@ void delayusg(unsigned long useg) {
 
 	_io_ports[M6812_TCTL1] &= ~(M6812B_OM6 | M6812B_OL6);
 
-	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
+	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
 	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
 	if(frec/1000000)
 	  numCiclosL = frec/1000000 * useg;
@@ -126,11 +126,11 @@ void delayusg(unsigned long useg) {
 }
 
 /**
-* @brief Imprime 4 bytes por pantalla en formato hexadecimal
+* @brief Imprime 4 unsigned chars por pantalla en formato hexadecimal
 */
-void print4bWord(bytes4 word){
-	bytes2 m1 = word >> 16;
-	bytes2 m2 = word;
+void print4bWord(unsigned long word){
+	unsigned int m1 = word >> 16;
+	unsigned int m2 = word;
 
 	serial_print("0x");
 	serial_printhexword(m1);
@@ -145,14 +145,14 @@ void print4bWord(bytes4 word){
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runAfterUsg(void (*f)(void *), void * args, bytes4 useg){
+void runAfterUsg(void (*f)(void *), void * args, unsigned long useg){
 	runAfterUsg_f = f;
   runAfterUsg_args = args;
 
-	bytes2 numCiclos;
-	bytes4 numCiclosL;
+	unsigned int numCiclos;
+	unsigned long numCiclosL;
 	_io_ports[M6812_TCTL2] &= ~(M6812B_OM1 | M6812B_OL1);
-	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
+	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
 	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
 	if(frec/1000000)
 		numCiclosL = frec/1000000 * useg;
@@ -174,14 +174,14 @@ void runAfterUsg(void (*f)(void *), void * args, bytes4 useg){
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runEveryUsg(void (*f)(void*), void * args, bytes4 useg){
+void runEveryUsg(void (*f)(void*), void * args, unsigned long useg){
 	runEveryUsg_f = f;
   runEveryUsg_args = args;
 
-	bytes2 numCiclos;
-	bytes4 numCiclosL;
+	unsigned int numCiclos;
+	unsigned long numCiclosL;
 	_io_ports[M6812_TCTL2] &= ~(M6812B_OM0 | M6812B_OL0);
-	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
+	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
 	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
 	if(frec/1000000)
 		numCiclosL = frec/1000000 * useg;
