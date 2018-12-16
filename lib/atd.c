@@ -1,6 +1,6 @@
 #include <atd.h>
 
-byte start_pin[8] = {A_IN_0, A_IN_1, A_IN_2, A_IN_3, A_IN_4, A_IN_5, A_IN_6, A_IN_7};
+char start_pin[8] = {A_IN_0, A_IN_1, A_IN_2, A_IN_3, A_IN_4, A_IN_5, A_IN_6, A_IN_7};
 
 void atd_set_resolution10( unsigned short port){
     if( port <= 1)
@@ -13,8 +13,8 @@ void atd_set_resolution8(unsigned short port){
 }
 
 void atd_set_sampling_time(unsigned short cicles, unsigned short port){
-    byte mask  = 0;
-    byte reset = ~(M6812B_SMP1 | M6812B_SMP0);
+    char mask  = 0;
+    char reset = ~(M6812B_SMP1 | M6812B_SMP0);
     switch( cicles){
         case 2:
             mask = 0;
@@ -43,7 +43,7 @@ void atd_set_sampling_time(unsigned short cicles, unsigned short port){
 
 }
 
-void atd_read_multiple_pin(bool activate, unsigned short port){
+void atd_read_multiple_pin(int activate, unsigned short port){
     if(port <= 1){
 	if(activate)
 	    _io_ports[M6812_ATD0CTL5 + port*DIST_AD] |= M6812B_MULT;
@@ -59,7 +59,7 @@ void atd_set_start_pin(unsigned short pin, unsigned short port){
     }
 }
 
-void atd_set_submodule_clock(byte val, unsigned short port){
+void atd_set_submodule_clock(char val, unsigned short port){
     if (port <= 1 && (val > 0 && val < 8) ){
         // Ponemos a 0 PRS4:PRS0 para poder realizar la OR sin quedarnos con el resto.
         _io_ports[M6812_ATD0CTL4 + port*DIST_AD] &= ~(M6812B_PRS4 | M6812B_PRS4 | M6812B_PRS2 | M6812B_PRS1 | M6812B_PRS0 );
@@ -70,7 +70,7 @@ void atd_set_submodule_clock(byte val, unsigned short port){
     }
 }
 
-void atd_set_FIFO(bool on, unsigned short port){
+void atd_set_FIFO(int on, unsigned short port){
     if(port <= 1){
       if (on == true)
         _io_ports[M6812_ATD0CTL3 + port*DIST_AD] |= M6812B_FIFO;
@@ -85,9 +85,9 @@ void atd_wait_for_conversor(unsigned short port){
     }
 }
 
-void atd_get_data(unsigned short * data, word * n , unsigned short port){
+void atd_get_data(unsigned short * data, unsigned short * n , unsigned short port){
     if(port <= 1 && (_io_ports[M6812_ATD0STAT0 + port*DIST_AD] & M6812B_SCF)){
-        byte n_conversiones;
+        char n_conversiones;
         if(_io_ports[M6812_ATD0CTL5 + port*DIST_AD] & M6812B_S8C)
             n_conversiones = 8;
         else{
@@ -97,13 +97,13 @@ void atd_get_data(unsigned short * data, word * n , unsigned short port){
 		            n_conversiones = 4;
 	      }
 
-	      word last = n_conversiones-1;
+	      unsigned short last = n_conversiones-1;
 	      if(_io_ports[M6812_ATD0CTL3 + port*DIST_AD] & M6812B_FIFO)
 	          last  = (M6812B_CC2 | M6812B_CC1 | M6812B_CC0 ) & _io_ports[M6812_ATD0STAT0 + port*DIST_AD];
 
-        word first = (last + 9 - n_conversiones) % 8;
-        word inx = first;
-	      word i;
+        unsigned short first = (last + 9 - n_conversiones) % 8;
+        unsigned short inx = first;
+	      unsigned short i;
         for(i = 0; i < n_conversiones; i++ ){
             data[inx%8] =  0;
             data[inx%8] |= _io_ports[(M6812_ADR00H + port*DIST_AD) + (inx%8)*DIST_RES];
@@ -119,7 +119,7 @@ void atd_get_data(unsigned short * data, word * n , unsigned short port){
     }
 }
 
-void atd_reset_on_read(bool ror, unsigned short port){
+void atd_reset_on_read(int ror, unsigned short port){
     if(port <= 1){
         if(ror)
             _io_ports[M6812_ATD0CTL2 + port*DIST_AD] |= M6812B_AFFC;
@@ -128,7 +128,7 @@ void atd_reset_on_read(bool ror, unsigned short port){
     }
 }
 
-void atd_align_left(bool left, unsigned short port){
+void atd_align_left(int left, unsigned short port){
     if(port <= 1){
         if(left)
             _io_ports[M6812_ATD0CTL2 + port*DIST_AD] &= ~(M6812B_DJM);
@@ -139,8 +139,8 @@ void atd_align_left(bool left, unsigned short port){
 
 
 
-bool atd_start_conversion(unsigned short port){
-    bool res = false;
+int atd_start_conversion(unsigned short port){
+    int res = false;
     if(port <= 1){
         if(!(_io_ports[M6812_ATD0STAT0 + port*DIST_AD] & M6812B_SCF)){
             _io_ports[M6812_ATD0CTL5 + port*DIST_AD] = _io_ports[M6812_ATD0CTL5 + port*DIST_AD];

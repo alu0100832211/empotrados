@@ -1,7 +1,9 @@
 #include <temporizador.h>
-/* 1 en la posicion del pin conectado */
-#define COL_M 0b00000111
-#define FIL_M 0b00001111
+#include <e_s_lib.h>
+
+/* Los bits a 1 son los que el puerto está usando */
+#define COL_M 0x07 //  00000111
+#define FIL_M 0x0f //  00001111
 #define FACTOR_T 7
 /******************** POSIBLES PROBLEMAS ********************
  * Libreria e/s no permite poner sólo un conjunto de pines como pull up
@@ -11,11 +13,12 @@
 
 /******************* VARIABLES GLOBALES *********************/
 char teclado[4][3] = {
-  {'1','2','3' },
-  {'4','5','6' },
-  {'7','8','9' },
-  {'*','0','#' },
-}
+// C1  C2  C3
+  {'1','2','3' }, // F1
+  {'4','5','6' }, // F2
+  {'7','8','9' }, // F2
+  {'*','0','#' }, // F2
+};
 /************************************************************/
 void teclado_init(){
   init_temporizador(FACTOR_T);
@@ -40,22 +43,29 @@ void teclado_init(){
   pull_up('H', 1);
 }
 
-char teclado_getch(int mode){
+char teclado_getch(){
   /* Salir si columnas no están a 1 */
-  if (_io_ports[M6812_PORTH] & COL_M != COL_M)
-    return -1;
+  if ((_io_ports[M6812_PORTH] & COL_M ) != COL_M)
+    return 'E';
   /* Esperar a que alguna columna llegue a 0 */
-  while(_io_ports[M6812_PORTH] & COL_M == COL_M);
+  while((_io_ports[M6812_PORTH] & COL_M ) == COL_M);
   /* Estabilización del valor 20 msg = 20000 useg*/
   delayusg(20000UL);
   /* Guardar la columna detectada */
-  unsigned char colPulsacion = (unsigned char)log2(_io_ports[M6812_PORTH] & COL_M); // A ver si se lo traga
+  unsigned char colPulsacion = 0;
+  int i;
+  for(i = 0; i < 3; i++){
+    if(!(_io_ports[M6812_PORTH] & (1<<i))){
+      colPulsacion = i;
+      break;
+    }
+  }
   /* Escribir 1 en todas las filas */
   _io_ports[M6812_PORTG] |= FIL_M; 
   
-  unsigned char filaPulsacion;
+  unsigned char filaPulsacion = 0;
   /* Poner cada fila a 0 */
-  for (int i = 0; i < 4; i++){
+  for (i = 0; i < 4; i++){
     _io_ports[M6812_PORTG] &= !(1 << i);
     if (_io_ports[M6812_PORTH] & colPulsacion){
       filaPulsacion = i;
@@ -71,18 +81,22 @@ char teclado_getch_timeout(unsigned int milis){
  unsigned long int tInicial = get_miliseconds(); 
  unsigned long int tActual = get_miliseconds();
  while((tActual-tInicial) < milis){
-   // Comprobar si hay pulsacion
    tActual = get_miliseconds();
+   if ((_io_ports[M6812_PORTH] & COL_M )!=COL_M) // Si hay pulsacion
+     return teclado_getch();
  }
+
+ return 'T';
 }
 
 int main(void){
   serial_init();
   teclado_init();
   /* Bits de columnas estan a 1 ??*/
-  if (teclado_getch() == -1)
-    exit(EXIT_FAILURE);
+  if (teclado_getch() == 'E')
+    serial_print("bits de columnas no están a 1 ERROR!\n");
   else
-    serial_print("bits de columnas están a 1 •ᴗ•\n");
+    serial_print("bits de columnas están a 1\n");
 
+  while(1);
 }

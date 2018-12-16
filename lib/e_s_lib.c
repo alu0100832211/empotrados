@@ -18,10 +18,10 @@
  * Llamada para configurar los pines 0 1 del puerto G como Entrada
  * configurar('G', 0, "0 1")
  */
-bool configurar_puerto(const char port_char, const bool conf, char* pines){
+int configurar_puerto(const char port_char, const int conf, char* pines){
 
 
-	byte port;
+	unsigned char port;
 	serial_init();
 	switch(port_char)
 	{
@@ -32,7 +32,7 @@ bool configurar_puerto(const char port_char, const bool conf, char* pines){
 	}
 
 	//serial_print("\nPines a asignar: ");
-	//serial_printdecbyte(pines);
+	//serial_printdecunsigned char(pines);
 	//serial_print("\n");
 
 	int i=0;
@@ -87,9 +87,9 @@ bool configurar_puerto(const char port_char, const bool conf, char* pines){
  * Apagar pullup en puerto B
  * pull_up('B', 0);
  */
-bool pull_up(const char port_char, const bool accion){
+int pull_up(const char port_char, const int accion){
 
-	bool temp = 1;
+	int temp = 1;
 
 	/*
 		Si accion = 0 apagar pullup en el puerto port
@@ -145,7 +145,7 @@ bool pull_up(const char port_char, const bool accion){
  * Apagar pullup
  * pull_up(0);
  */
-bool pull_up_all(const bool accion){
+int pull_up_all(const int accion){
 
 	serial_init();
 
@@ -172,12 +172,12 @@ bool pull_up_all(const bool accion){
  * @brief Método para leer un puerto
  *
  * Leer del puerto H
- * byte value;
+ * unsigned char value;
  * value = leer_puerto('H');
  */
-byte leer_puerto(const char port_char){
+unsigned char leer_puerto(const char port_char){
 
-	byte port;
+	unsigned char port;
 	switch(port_char)
 	{
 		case 'H': port = M6812_PORTH; break;
@@ -187,15 +187,15 @@ byte leer_puerto(const char port_char){
 
 	serial_init();
 	serial_print("Leyendo el puerto ");
-	serial_printbinbyte(port_char);
+	serial_printbinunsigned char(port_char);
 	serial_print("\nBin -> ");
-	serial_printbinbyte(_io_ports[port]);
+	serial_printbinunsigned char(_io_ports[port]);
 	serial_print("\n");
 	serial_print("Hex -> ");
-	serial_printhexbyte(_io_ports[port]);
+	serial_printhexunsigned char(_io_ports[port]);
 	serial_print("\n");
 	serial_print("Dec -> ");
-	serial_printdecbyte(_io_ports[port]);
+	serial_printdecunsigned char(_io_ports[port]);
 	serial_print("\n");
 
 	return port;
@@ -206,12 +206,12 @@ byte leer_puerto(const char port_char){
  * @brief Método para leer un puerto
  *
  * Escribir en puerto H el valor 0xff
- * byte value = 0xff;
+ * unsigned char value = 0xff;
  * escribir_puerto('H', value);
  */
-void escribir_puerto(const char port_char, byte value){
+void escribir_puerto(const char port_char, unsigned char value){
 
-	byte port;
+	unsigned char port;
 	switch(port_char)
 	{
 		case 'H': port = M6812_PORTH; break;
@@ -221,9 +221,9 @@ void escribir_puerto(const char port_char, byte value){
 
 	serial_init();
 	serial_print("Escribiendo en el puerto: ");
-	serial_printbinbyte(port_char);
+	serial_printbinunsigned char(port_char);
 	serial_print(" el valor = ");
-	serial_printbinbyte(value);
+	serial_printbinunsigned char(value);
 	serial_print("\n");
 
 	_io_ports[port] = value;

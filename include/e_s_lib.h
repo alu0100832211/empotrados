@@ -22,8 +22,8 @@
 
 
 
-typedef unsigned char byte;
-typedef int bool;	//declaración de booleano
+//typedef unsigned char unsigned char;
+//typedef int int;
 
 
 /**
@@ -35,7 +35,7 @@ typedef int bool;	//declaración de booleano
  * Llamada para configurar los pines 0 1 del puerto G como Entrada
  * configurar('G', 0, "0 1")
  */
-bool configurar_puerto(const char port_char, const bool conf, char* pines);
+int configurar_puerto(const char port_char, const int conf, char* pines);
 
 /**
  * @brief Método para encender/apagar los PULLUP en los diferentes puertos (A,B,E,H,G)
@@ -48,7 +48,7 @@ bool configurar_puerto(const char port_char, const bool conf, char* pines);
  * Apagar pullup en puerto B
  * pull_up('B', 0);
  */
-bool pull_up(const char port_char, const bool accion);
+int pull_up(const char port_char, const int accion);
 
 /**
  * @brief Método para encender/apagar los PULLUP en todos los puertos
@@ -61,24 +61,24 @@ bool pull_up(const char port_char, const bool accion);
  * Apagar pullup
  * pull_up(0);
  */
-bool pull_up_all(const bool accion);
+int pull_up_all(const int accion);
 
 /**
  * @brief Método para leer un puerto
  *
  * Leer del puerto H
- * byte value;
+ * unsigned char value;
  * value = leer_puerto('H');
  */
-byte leer_puerto(const char port_char);
+unsigned char leer_puerto(const char port_char);
 /**
  * @brief Método para leer un puerto
  *
  * Escribir en puerto H el valor 0xff
- * byte value = 0xff;
+ * unsigned char value = 0xff;
  * escribir_puerto('H', value);
  */
-void escribir_puerto(const char port_char, byte value);
+void escribir_puerto(const char port_char, unsigned char value);
 
 /*@}*/
 

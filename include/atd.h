@@ -33,12 +33,12 @@
 #define A_IN_6 (M6812B_CC | M6812B_CB)
 #define A_IN_7 (M6812B_CC | M6812B_CB | M6812B_CA)
 
-typedef int bool;
+/*typedef int int;*/
 #define true 1
 #define false 0
 
-typedef char byte;
-typedef unsigned short word;
+/*typedef char char;*/
+/*typedef unsigned short unsigned short;*/
 
 /**
  * @brief Permite establecer la resolución a 10 bits.
@@ -64,7 +64,7 @@ void atd_set_sampling_time(unsigned short cicles, unsigned short port);
  * @param activate Parámetro para indicar la operación : true=activar   false=desactivar.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-inline void atd_read_multiple_pin(bool activate, unsigned short port);
+inline void atd_read_multiple_pin(int activate, unsigned short port);
 
 /**
  * @brief Función para configurar el pin de inicio.
@@ -78,14 +78,14 @@ inline void atd_set_start_pin(unsigned short pin, unsigned short port);
  * @param val Seleccionador de frecuencia.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-void atd_set_submodule_clock(byte val, unsigned short port);
+void atd_set_submodule_clock(char val, unsigned short port);
 
 /**
  * @brief Función para activar o desactivar el modo FIFO en el guardado de los resultados.
  * @param on Parámetro para indicar la operación : true=activar false=desactivar.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-void atd_set_FIFO(bool on, unsigned short port);
+void atd_set_FIFO(int on, unsigned short port);
 
 /**
  * @brief Función que espera hasta que se finalice la conversión.
@@ -99,7 +99,7 @@ void atd_wait_for_conversor(unsigned short port);
  * @param n Dirección de la variable que contendrá el número de conversiones realizadas.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-void atd_get_data(unsigned short * data, word * n , unsigned short port);
+void atd_get_data(unsigned short * data, unsigned short * n , unsigned short port);
 
 /**
  * @brief Función para determinar el módo de puesta a 0 de los indicadore de conversión completa.
@@ -108,7 +108,7 @@ void atd_get_data(unsigned short * data, word * n , unsigned short port);
  * false=Necesario acceder primero al registro de control y después al de datos.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-void atd_reset_on_read(bool ror, unsigned short port);
+void atd_reset_on_read(int ror, unsigned short port);
 
 /**
  * @brief Función configurar el modo de justificación de los datos. (afecta en el momento de leer los registros de resultados)
@@ -117,13 +117,13 @@ void atd_reset_on_read(bool ror, unsigned short port);
  * false=Se aplicará justificación a la derecha.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-void atd_align_left(bool left, unsigned short port);
+void atd_align_left(int left, unsigned short port);
 
 /**
  * @brief Función para iniciar la conversión.
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
-bool atd_start_conversion(unsigned short port);
+int atd_start_conversion(unsigned short port);
 
 /**
  * @brief Función para configurar el número de conversiones sucesivas.

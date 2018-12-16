@@ -15,12 +15,13 @@
  * Nuestra librería no devuelve valores en hexadecimal porque un 
  * valor en sí no es hexadecimal. Lo que pasa es que al llamarlo
  * con serial_hexprint se representaba en hexadecimal.
+ * Si refrescar7Seg no va, probar sustituir variable static por
+ * variable global
  ***************************************************************/
 #define FACTOR_T 7
 #define PUERTO_ATD 1
 
 /***************** VARIABLES GLOBALES **************************/
-int n7S = 0; //número 7 segmento (7-segmento que se enciende)
 unsigned char digits_refreshed[4];
 /***************************************************************/
 
@@ -39,6 +40,7 @@ void sieteSeg_init(){
 void refrescar7Seg(void * ptr){
   unsigned char * digito;
   digito = (unsigned char*)ptr;
+  static int n7S = 0; //número 7 segmento (7-segmento que se enciende)
   _io_ports[M6812_PORTG] = digito[n7S];
   (n7S == 3) ? n7S = 0 : n7S++;
 }
@@ -48,8 +50,8 @@ void sieteSeg_digitos(unsigned char* digito){
    *          0  1  2  3  **/
   unsigned char digitMask;
   int digitPos;
-  for (digitPos = 0; digitPos < 4; digitPos++){
-    digitMask = 1 << (4 + digitPos);      //00010000 << digitPos
+  for (digitPos = 0; digitPos < 4; digitPos++){ //Configurar el 7-segmento que se enciende
+    digitMask = 1 << (7 - digitPos);      //10000000 >> digitPos
     digitMask |= 0x0f;                    //00010000 |= 00011111
     digito[digitPos] |= 0xf0;             //xxxxyyyy |= 11110000 = 1111yyyy
     digito[digitPos] &= digitMask;        //1111yyyy &= 00011111 = 0001yyyy
