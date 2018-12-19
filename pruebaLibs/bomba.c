@@ -134,9 +134,40 @@ void sieteSeg_valor(unsigned int numero){
   sieteSeg_digitos(digits_refreshed);
 }
 
-
-int main (void){
+void all_init(){
+  serial_init();
   init_temporizador(FACTOR_T);
   teclado_init();
   sieteSeg_init();
+}
+
+int atoi(const char charNum){
+  return (int)(charNum-48); /*ASCII*/
+}
+
+int main (void){
+  all_init();
+
+  int digitoNumero[3];
+  int i = 0;
+  int num = 0;
+  int pow10[3] = {1, 10, 100};
+
+  while(1){
+    serial_print("Esperando digitoNumero\n");
+    num = 0;
+    for(i = 0; i < 3; i++){
+      digitoNumero[i] = teclado_getch();
+      if(digitoNumero[i] == 'E'){
+        serial_print("Error en teclado getch\n");
+      }
+      num += atoi(digitoNumero[i])*pow10[3-i];
+    }
+    if (num >= 0)
+      if(num <= 0){
+    // Hacer girar el motor
+    }
+   //Usar las teclas * y #
+   //para confirmar y cancelar la introducción del número, respectivamente.
+  }
 }
