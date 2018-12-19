@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['p_5ftmpdir',['P_tmpdir',['../stdio_8h.html#a09ceb74f0162424b6ceb823a4c702b85',1,'stdio.h']]],
+  ['param_2eh',['param.h',['../param_8h.html',1,'']]],
+  ['pol_5fv',['pol_v',['../pwm__lib_8c.html#ae4d8f0620513ad61b92759a01dafda86',1,'pwm_lib.c']]],
+  ['polarity',['polarity',['../group__pwdlib.html#ga3a7073ff88fc571c20e226ad2b1381c8',1,'polarity(int pol):&#160;pwm_lib.c'],['../group__pwdlib.html#ga3a7073ff88fc571c20e226ad2b1381c8',1,'polarity(int pol):&#160;pwm_lib.c']]],
+  ['ports_2eh',['ports.h',['../ports_8h.html',1,'']]],
+  ['ports_5fdef_2eh',['ports_def.h',['../ports__def_8h.html',1,'']]],
+  ['potenciometro7segmentos_2ec',['potenciometro7Segmentos.c',['../potenciometro7_segmentos_8c.html',1,'']]],
+  ['precision',['PRECISION',['../group__pwdlib.html#ga9c7b069fee3c8184e14a7de8e5da2dc6',1,'pwm_lib.h']]],
+  ['premain_2ec',['premain.c',['../premain_8c.html',1,'']]],
+  ['print4bword',['print4bWord',['../group__temporizador.html#ga0ea3323c0e8ed6af227bd3e9415d2a1c',1,'print4bWord(bytes4 word):&#160;temporizador.c'],['../group__temporizador.html#ga0ea3323c0e8ed6af227bd3e9415d2a1c',1,'print4bWord(bytes4 word):&#160;temporizador.c']]],
+  ['printf',['printf',['../printf_8c.html#ae3e208df31f6201d65e1da7eaec531d2',1,'printf.c']]],
+  ['printf_2ec',['printf.c',['../printf_8c.html',1,'']]],
+  ['prueba_5fatc_2ec',['prueba_atc.c',['../prueba__atc_8c.html',1,'']]],
+  ['prueba_5fconversion_5fcontinua',['prueba_conversion_continua',['../prueba__atc_8c.html#a06199748b746a6887216c13a7b6765e8',1,'prueba_atc.c']]],
+  ['prueba_5fe_5fs_5flib_2ec',['prueba_e_s_lib.c',['../prueba__e__s__lib_8c.html',1,'']]],
+  ['prueba_5fjustificacion',['prueba_justificacion',['../prueba__atc_8c.html#afa1fcad66b13cc58cb76b8bb558d8d33',1,'prueba_atc.c']]],
+  ['prueba_5fmultiples_5fconversiones',['prueba_multiples_conversiones',['../prueba__atc_8c.html#af59ebe3b44372e7da06bce21aa20d47a',1,'prueba_atc.c']]],
+  ['prueba_5fpwm_5flib_2ec',['prueba_pwm_lib.c',['../prueba__pwm__lib_8c.html',1,'']]],
+  ['prueba_5fresolucion',['prueba_resolucion',['../prueba__atc_8c.html#a8c5cd2246404af41889e61cf664c580a',1,'prueba_atc.c']]],
+  ['prueba_5ftiempos_5fde_5fmuestreo',['prueba_tiempos_de_muestreo',['../prueba__atc_8c.html#aef0ff54be389bec527b2794eb4d02e0e',1,'prueba_atc.c']]],
+  ['pull_5fup',['pull_up',['../group__e__s__lib.html#ga4f4d1d76aec6eaffb82b8bfa68585d9c',1,'pull_up(const char port_char, const bool accion):&#160;e_s_lib.c'],['../group__e__s__lib.html#ga4f4d1d76aec6eaffb82b8bfa68585d9c',1,'pull_up(const char port_char, const bool accion):&#160;e_s_lib.c']]],
+  ['pull_5fup_5fall',['pull_up_all',['../group__e__s__lib.html#ga6cd0386622cebda2dcdf2ea7d32e0f75',1,'pull_up_all(const bool accion):&#160;e_s_lib.c'],['../group__e__s__lib.html#ga6cd0386622cebda2dcdf2ea7d32e0f75',1,'pull_up_all(const bool accion):&#160;e_s_lib.c']]],
+  ['pwd_5fgeneralizado',['pwd_generalizado',['../group__pwdlib.html#gaa4da5b2bda62ceed815c5c69bf1fa18a',1,'pwd_generalizado(int channel, unsigned long frec, int pol):&#160;pwm_lib.c'],['../group__pwdlib.html#gaa4da5b2bda62ceed815c5c69bf1fa18a',1,'pwd_generalizado(int channel, unsigned long frec, int pol):&#160;pwm_lib.c']]],
+  ['pwm_5flib_2ec',['pwm_lib.c',['../pwm__lib_8c.html',1,'']]],
+  ['pwm_5flib_2eh',['pwm_lib.h',['../pwm__lib_8h.html',1,'']]]
+];
