@@ -23,19 +23,30 @@
 
 
 //typedef unsigned char unsigned char;
-//typedef int int;
+//typedef int int;	//declaración de inteano
 
 
 /**
  * @brief Método de configuración de puerto como entrada/salida y sus respectivos pines
  *
- * Llamada para configurar los pines 0 1 2 3 4 5 del puerto H como salida
- * configurar('H', 1, "0 1 2 3 4 5")
+ * ~~Llamada para configurar los pines 0 1 2 3 4 5 del puerto H como salida
+ * configurar('H', 1, "0 1 2 3 4 5")~~
  *
- * Llamada para configurar los pines 0 1 del puerto G como Entrada
- * configurar('G', 0, "0 1")
+ * ~~Llamada para configurar los pines 0 1 del puerto G como Entrada
+ * configurar('G', 0, "0 1")~~
+ *
+ * Llamada para configurar el pin 3 del puerto H como entrada:
+ * `configurar_puerto('H', 0, 3)`.
+ *
+ * Llamada para configurar el pin 5 del puerto G como salida:
+ * `configurar_puerto('G',1, 5)`.
+ *
+ * @param port_char caracter con el nombre del puerto 'H', 'G', ...
+ * @param conf dirección a asignar: 1 salida, 0 entrada
+ * @param pin pin a configurar
+ * @return 1 si se realizó configuración, 0 si algún fallo.
  */
-int configurar_puerto(const char port_char, const int conf, char* pines);
+int configurar_puerto(const char port_char, const int conf, int pin);
 
 /**
  * @brief Método para encender/apagar los PULLUP en los diferentes puertos (A,B,E,H,G)
@@ -72,13 +83,24 @@ int pull_up_all(const int accion);
  */
 unsigned char leer_puerto(const char port_char);
 /**
- * @brief Método para leer un puerto
+ * @brief Método para escribir un valor en un puerto
  *
  * Escribir en puerto H el valor 0xff
+ *```
  * unsigned char value = 0xff;
  * escribir_puerto('H', value);
+ *```
  */
 void escribir_puerto(const char port_char, unsigned char value);
+
+
+/**
+ * @brief Método que devuelve la máscara del bit del puerto correspondiente
+ *
+ * es equivalente a `(1 << bit)`.
+ */
+unsigned char leer_puerto_bit(const char port_char, int bit);
+
 
 /*@}*/
 

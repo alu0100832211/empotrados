@@ -55,39 +55,39 @@
 //PRECISION
 #define PRECISION 32
 
+//M6812_CPU_E_CLOCK=8.000.000hz=8Mhz
+#define MAX_FREC_PRESCALER1 62500
+#define MAX_PRESCALAR1_VALOR 128
+#define MAX_PRESCALAR2_VALOR 256
+#define VALOR_TOTAL_DIVISOR 32768
+
 
 /** returns a divider given a frequency*/
-inline int fre_calc (unsigned long int frequency);
+inline void divider_calc (unsigned long frequency);
 
 /** CHANGES ACTUAL CHANNEL: low-high polarity if 0, high-low polarity otherwise */
-inline void polarity (int pol);
+inline void polarity (unsigned int pol);
 
 /** left-aligned if 0, center-aligned otherwise */
-inline void alignment (int align);
+inline void alignment (unsigned int align);
 
 /** CHANGES ACTUAL CHANNEL: set PWPER directly */
-void set_PWPER (unsigned char period);
+void set_PWPER (unsigned int period);
 
 /** CHANGES ACTUAL CHANNEL: set PWDTY directly */
-void set_PWDTY (unsigned char period);
+void set_PWDTY (unsigned int period);
 
 /** CHANGES ACTUAL CHANNEL: set duty work by percentage -> 0 1 2 3 4 representating 0 25 50 75 100% */
-void set_duty_percentage (int percent);
+void set_duty_percentage (unsigned int percent);
 
 /** set current channel */
-void set_channel (int channel);
+void set_channel (unsigned int channel);
 
 /** unables all channels */
 inline void reset_channel ();
 
-/** set PWSCAL for S0 & S1 channels */
-inline void set_PWSCAL (int value);
-
-/** set PWCLK for A & B channels */
-inline void set_AB_clock(int value);
-
 /** a quick method to set up the PWM */
-void pwd_generalizado(int channel, unsigned long frec, int pol);
+void pwd_generalizado(unsigned int channel, unsigned long frec, unsigned int pol);
 
 /*@}*/
 

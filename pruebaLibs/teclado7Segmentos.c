@@ -31,13 +31,18 @@ void teclado_init(){
    * entrada y salida */
 
   /* G = FILAS = SALIDA */
-  configurar_puerto('G', 1, "0 1 2 3");
+  configurar_puerto('G', 1, 0);
+  configurar_puerto('G', 1, 1);
+  configurar_puerto('G', 1, 2);
+  configurar_puerto('G', 1, 3);
 
   /* Todas las filas a 0 */
   escribir_puerto('G', 0);
 
   /* H = COLUMNAS = ENTRADA */
-  configurar_puerto('H', 0, "0 1 2");
+  configurar_puerto('H', 0, 0);
+  configurar_puerto('H', 0, 1);
+  configurar_puerto('H', 0, 2);
 
   /* COLUMNAS = resistencias pull-up */
   pull_up('H', 1);
@@ -52,21 +57,22 @@ char teclado_getch(){
   /* Estabilización del valor 20 msg = 20000 useg*/
   delayusg(20000UL);
   /* Guardar la columna detectada */
-  unsigned char colPulsacion = !(_io_ports[M6812_PORTH] | 0xf0);
+  unsigned char bitPulsacion = !(_io_ports[M6812_PORTH] & COL_M); /*Dejar un 1 en la posicion de la columna*/
   int i = 0;
-  while(colPulsacion > 1){
-    colPulsacion >> 1;
+  unsigned char bitPulsacion_aux = bitPulsacion;
+  while(bitPulsacion_aux > 1){
+    bitPulsacion_aux = bitPulsacion_aux >> 1;
     i++;
   }
-  colPulsacion = i;
+  int colPulsacion = i;
   /* Escribir 1 en todas las filas */
   _io_ports[M6812_PORTG] |= FIL_M; 
   
-  unsigned char filaPulsacion = 0;
+  int filaPulsacion = 0;
   /* Poner cada fila a 0 */
   for (i = 0; i < 4; i++){
     _io_ports[M6812_PORTG] &= !(1 << i);
-    if (_io_ports[M6812_PORTH] & colPulsacion){
+    if (!(_io_ports[M6812_PORTH] & bitPulsacion)){ /* Si la columna pulsada baja a 0 */
       filaPulsacion = i;
       break;
     }
@@ -82,7 +88,7 @@ char teclado_getch(){
 
 char teclado_getch_timeout(unsigned int milis){
  unsigned long int tInicial = get_miliseconds(); 
- unsigned long int tActual = get_miliseconds();
+ unsigned long int tActual = tInicial;
  while((tActual-tInicial) < milis){
    tActual = get_miliseconds();
    if ((_io_ports[M6812_PORTH] & COL_M )!=COL_M)
@@ -95,12 +101,14 @@ char teclado_getch_timeout(unsigned int milis){
 int main(void){
   serial_init();
   teclado_init();
+  char letra;
   while(1){
   /* Bits de columnas estan a 1 ??*/
-  if (teclado_getch() == 'E')
-    serial_print("bits de columnas no están a 1 ERROR!\n");
-  else
-    serial_print("bits de columnas están a 1\n");
+    letra = teclado_getch();
+    serial_print("teclado_getch()\nLetra recibida: ");
+    serial_print(&letra);
+    serial_print("teclado_getch_timeout(2000ms)\nLetra recibida: ");
+    letra = teclado_getch_timeout(2000);
+    serial_print(&letra);
   }
-  while(1);
 }

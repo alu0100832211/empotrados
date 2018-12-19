@@ -213,12 +213,30 @@ extern unsigned char serial_getdecbyte();
 */
 extern unsigned short serial_getdecword();
 
+/** Espera por la serial digitos decimales para formar un long
+    (4 bytes) sin signo.
+    Permite borrar y termina con \\n. Controla desboradmiento.
+
+    @return devuelve número decimal tecleado por el usuario.
+
+*/
+extern unsigned long serial_getdeclong();
+
+
 /** Saca por la serial en decimal doble byte pasado.
 
     @param sa word a mostar por la serial
 
 */
 extern void serial_printdecword(unsigned short sa);
+
+/** Saca por la serial en decimal el long (4 bytes) pasado.
+
+    @param sa word a mostar por la serial
+
+*/
+void serial_printdeclong(unsigned long sa);
+
 
 /** Saca por la serial en decimal byte pasado.
 

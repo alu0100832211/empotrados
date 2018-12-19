@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_5fio_5fports',['_io_ports',['../ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'ports_def.h']]]
+  ['_5fio_5fports',['_io_ports',['../include_2sys_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h'],['../old_2include_2asm-m68hc11_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h'],['../old_2include_2asm-m68hc12_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h'],['../old_2temporizador_2include_2asm-m68hc11_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h'],['../old_2temporizador_2include_2asm-m68hc12_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h'],['../old2_2include_2sys_2ports__def_8h.html#acb39c27c5b828bb40948690ed0fc9462',1,'_io_ports():&#160;ports_def.h']]],
+  ['_5fvectors_5faddr',['_vectors_addr',['../group__interrupts.html#ga67f07ac723f3545f963756ee925be0d4',1,'_vectors_addr():&#160;interrupts.h'],['../group__interrupts.html#ga67f07ac723f3545f963756ee925be0d4',1,'_vectors_addr():&#160;interrupts.h']]]
 ];

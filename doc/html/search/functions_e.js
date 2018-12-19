@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['vsprintf',['vsprintf',['../sprintf_8c.html#aeb2d75a5e874d72b09aba28e959c1ed7',1,'sprintf.c']]]
+  ['teclado_5fgetch',['teclado_getch',['../old2_2prueba_libs_2teclado7_segmentos_8c.html#a8c69f6452823866d31f15c7df036a967',1,'teclado_getch():&#160;teclado7Segmentos.c'],['../prueba_libs_2teclado7_segmentos_8c.html#a8c69f6452823866d31f15c7df036a967',1,'teclado_getch():&#160;teclado7Segmentos.c']]],
+  ['teclado_5fgetch_5ftimeout',['teclado_getch_timeout',['../old2_2prueba_libs_2teclado7_segmentos_8c.html#a0e4effb1a0d6d4c2a4dd93c0d846c39f',1,'teclado_getch_timeout(unsigned int milis):&#160;teclado7Segmentos.c'],['../prueba_libs_2teclado7_segmentos_8c.html#a0e4effb1a0d6d4c2a4dd93c0d846c39f',1,'teclado_getch_timeout(unsigned int milis):&#160;teclado7Segmentos.c']]],
+  ['teclado_5finit',['teclado_init',['../old2_2prueba_libs_2teclado7_segmentos_8c.html#ab96e8a4130d807871058321aa4ab0630',1,'teclado_init():&#160;teclado7Segmentos.c'],['../prueba_libs_2teclado7_segmentos_8c.html#ab96e8a4130d807871058321aa4ab0630',1,'teclado_init():&#160;teclado7Segmentos.c']]],
+  ['timer_5facknowledge',['timer_acknowledge',['../old_2include_2asm-m68hc11_2ports_8h.html#a9483aaa2742083c8c82f0de41203d99e',1,'timer_acknowledge(void):&#160;ports.h'],['../old_2temporizador_2include_2asm-m68hc11_2ports_8h.html#a9483aaa2742083c8c82f0de41203d99e',1,'timer_acknowledge(void):&#160;ports.h']]],
+  ['timer_5finitialize_5frate',['timer_initialize_rate',['../old_2include_2asm-m68hc11_2ports_8h.html#a79b69ac889a4e4591cff6b5f6e68118d',1,'timer_initialize_rate(unsigned char divisor):&#160;ports.h'],['../old_2temporizador_2include_2asm-m68hc11_2ports_8h.html#a79b69ac889a4e4591cff6b5f6e68118d',1,'timer_initialize_rate(unsigned char divisor):&#160;ports.h']]]
 ];

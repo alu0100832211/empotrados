@@ -6,16 +6,16 @@ Librería para realizar un temporizador
 
 #include <temporizador.h>
 
-unsigned long nDisparosOC0_inicial;
-unsigned long nDisparosOC0 = 0;
-unsigned long nDisparosOC1 = 0;
+bytes4 nDisparosOC0_inicial;
+bytes2 numCiclosOC0;
+bytes4 nDisparosOC0 = 0;
 
-unsigned long nDesbordamientos = 0UL;
+bytes4 nDisparosOC1 = 0;
 
-void * runAfterUsg_args;
-void * runEveryUsg_args;
-void (*runAfterUsg_f)(void *);
-void (*runEveryUsg_f)(void *);
+bytes4 nDesbordamientos = 0UL;
+
+void (*runAfterUsg_f)(void);
+void (*runEveryUsg_f)(void);
 
 void __attribute__((interrupt)) vi_tov(void) {
 	nDesbordamientos++;
@@ -23,19 +23,21 @@ void __attribute__((interrupt)) vi_tov(void) {
 }
 
 void __attribute__((interrupt)) vi_ioc0(void){
+	_io_ports[M6812_TFLG1] = M6812B_C0F;
 	if(nDisparosOC0 == 0){
-		runEveryUsg_f(runEveryUsg_args);
+
 		nDisparosOC0 = nDisparosOC0_inicial;
+    _IO_PORTS_W(M6812_TC0) = _IO_PORTS_W(M6812_TC0) + numCiclosOC0;
+		(*runEveryUsg_f)();
 	}
 	else{
 		nDisparosOC0--;
 	}
-	_io_ports[M6812_TFLG1] = M6812B_C0F;
 }
 
 void __attribute__((interrupt)) vi_ioc1(void) {
 	if(nDisparosOC1 == 0){
-		runAfterUsg_f(runAfterUsg_args);
+		(*runAfterUsg_f)();
 		_io_ports[M6812_TMSK1] &= ~M6812B_C1I;
 	}
 	else{
@@ -47,7 +49,7 @@ void __attribute__((interrupt)) vi_ioc1(void) {
 /**
 * @brief Inicializa los flags del contador. Cada vez que se llama se resetea el contador.
 * @param factorT Factor de escalado del procesador. Va de 0 a 7. La frecuencia base del reloj (8MHz) se divide por la potencia de dos elevado al factor de escalado. Ejemplo factoT = 7  8MHz/2⁷ = 16μsg
-* IMPORTANTE: De momento, usar un factor distinto de 7 está dando problemas para calcular el tiempo
+* @return
 */
 void init_temporizador(int factorT){
 	if (factorT > 7){
@@ -66,13 +68,13 @@ void init_temporizador(int factorT){
 }
 
 /**
-* @brief Tiempo en microsegundos desde la llamada a init
-* Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
-* @return 4unsigned chars que representan el valor hexadecimal
+* @brief Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
+* @param
+* @return 4bytes que representan el valor hexadecimal
 */
-unsigned long get_microseconds(void){
-	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
-	unsigned long  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCNT);
+bytes4 get_microseconds(void){
+	byte factorT = _io_ports[M6812_TMSK2] & 0x07;
+	bytes4  numCiclos = (nDesbordamientos << 16) | _IO_PORTS_W(M6812_TCNT);
 	int desp = 3 - factorT;
 	if (desp > 0){
 		return numCiclos >> desp;
@@ -85,11 +87,47 @@ unsigned long get_microseconds(void){
 
 /**
 * @brief Cuenta el numero de desbordamientos del temporizador y calcula los microsegundos en funcion de la frecuencia del reloj
-* @return 4 unsigned chars que representan el valor hexadecimal
+* @return 4 bytes que representan el valor hexadecimal
 */
-unsigned long get_miliseconds(void){
-	return get_microseconds() * 1000;
+bytes4 get_miliseconds(void){
+	return get_microseconds() / 1000;
 }
+
+/**
+* @brief calcula los disparos y ciclos necesarios para cubrir useg dados
+*/
+void calculaDisparosCiclos(bytes4 useg, bytes4* disparos, bytes2* ciclos) {
+  bytes4 numCiclosL;
+
+  byte factorT = _io_ports[M6812_TMSK2] & 0x07;
+  bytes4 frec = M6812_CPU_E_CLOCK/(1 << factorT);
+
+  byte numDivisiones = 6;
+  bytes4 frecD = frec;
+  while ((numDivisiones > 0) && !(frecD % 10)) {
+    frecD /= 10;
+    numDivisiones--;
+  }
+  bytes4 usegD = useg;
+  while ((numDivisiones > 0) && (usegD > (0xFFFFFFFF/frecD))) {
+    usegD /= 10;
+    numDivisiones--;
+  }
+  numCiclosL = frecD * usegD;
+
+  while (numDivisiones > 0) {
+    numCiclosL /= 10;
+    numDivisiones--;
+  }
+
+  *disparos = numCiclosL >> 16;
+  *ciclos = numCiclosL & 0xffff;
+
+  if((*ciclos == 0) && (*disparos == 0)) *ciclos = 1;
+
+}
+
+
 
 /**
 * @brief Espera un tiempo bloqueando la ejecución del programa
@@ -97,23 +135,11 @@ unsigned long get_miliseconds(void){
 * @param useg valor decimal en microsegundos que espera la funcion
 */
 void delayusg(unsigned long useg) {
-	unsigned int numCiclos;
-	unsigned long numCiclosL;
 
-	_io_ports[M6812_TCTL1] &= ~(M6812B_OM6 | M6812B_OL6);
+	bytes2 numCiclos;
+	bytes4 numDisparos;
 
-	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
-	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
-	if(frec/1000000)
-	  numCiclosL = frec/1000000 * useg;
-	else
-	  numCiclosL = frec/100 * useg/10000;
-
-	unsigned int numDisparos = numCiclosL >> 16;
-	numCiclos = numCiclosL & 0xffff;
-
-	if(frec/1000000)
-	if((numCiclos == 0) && (numDisparos == 0)) numCiclos = 1;
+  calculaDisparosCiclos(useg, &numDisparos, &numCiclos);
 
 	_io_ports[M6812_TIOS] |= M6812B_IOS6;
 	_io_ports[M6812_TFLG1] = M6812B_C6F;
@@ -125,43 +151,18 @@ void delayusg(unsigned long useg) {
 	} while(numDisparos--);
 }
 
-/**
-* @brief Imprime 4 unsigned chars por pantalla en formato hexadecimal
-*/
-void print4bWord(unsigned long word){
-	unsigned int m1 = word >> 16;
-	unsigned int m2 = word;
-
-	serial_print("0x");
-	serial_printhexword(m1);
-	serial_printhexword(m2);
-	serial_print("\n");
-}
-
 
 /**
 * @brief Ejecuta una función después de un tiempo determiando
-* Ejemplo de uso en 
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runAfterUsg(void (*f)(void *), void * args, unsigned long useg){
+void runAfterUsg(void (*f)(void), bytes4 useg){
 	runAfterUsg_f = f;
-  runAfterUsg_args = args;
 
-	unsigned int numCiclos;
-	unsigned long numCiclosL;
-	_io_ports[M6812_TCTL2] &= ~(M6812B_OM1 | M6812B_OL1);
-	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
-	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
-	if(frec/1000000)
-		numCiclosL = frec/1000000 * useg;
-	else
-		numCiclosL = frec/100 * useg/10000;
-	nDisparosOC1 = numCiclosL >> 16;
-	numCiclos = numCiclosL & 0xffff;
+	bytes2 numCiclos;
 
-	if((numCiclos == 0) && (nDisparosOC1 == 0)) numCiclos = 1;
+  calculaDisparosCiclos(useg, &nDisparosOC1, &numCiclos);
 
 	_io_ports[M6812_TIOS] |= M6812B_IOS1;
 	_io_ports[M6812_TFLG1] = M6812B_C1F;
@@ -174,28 +175,15 @@ void runAfterUsg(void (*f)(void *), void * args, unsigned long useg){
 * @param f Función que se repetirá según el tiempo pasado
 * @param useg Tiempo que esperará para ejecutar la función pasada. Este parámetro hay que pasarlo en microsegundos
 */
-void runEveryUsg(void (*f)(void*), void * args, unsigned long useg){
+void runEveryUsg(void (*f)(void), bytes4 useg){
 	runEveryUsg_f = f;
-  runEveryUsg_args = args;
 
-	unsigned int numCiclos;
-	unsigned long numCiclosL;
-	_io_ports[M6812_TCTL2] &= ~(M6812B_OM0 | M6812B_OL0);
-	unsigned char factorT = _io_ports[M6812_TMSK2] & 0x07;
-	unsigned long frec = M6812_CPU_E_CLOCK/(1 << factorT);
-	if(frec/1000000)
-		numCiclosL = frec/1000000 * useg;
-	else
-		numCiclosL = frec/100 * useg/10000;
-
-	nDisparosOC0 = numCiclosL >> 16;
-	nDisparosOC0_inicial = nDisparosOC0;
-	numCiclos = numCiclosL & 0xffff;
-
-	if((numCiclos == 0) && (nDisparosOC0 == 0)) numCiclos = 1;
+  calculaDisparosCiclos(useg, &nDisparosOC0, &numCiclosOC0);
+  nDisparosOC0_inicial = nDisparosOC0;
 
 	_io_ports[M6812_TIOS] |= M6812B_IOS0;
 	_io_ports[M6812_TFLG1] = M6812B_C0F;
-	_IO_PORTS_W(M6812_TC0) = _IO_PORTS_W(M6812_TCNT) + numCiclos ;
+	_IO_PORTS_W(M6812_TC0) = _IO_PORTS_W(M6812_TCNT) + numCiclosOC0 ;
 	_io_ports[M6812_TMSK1] |= M6812B_C0I;
+
 }

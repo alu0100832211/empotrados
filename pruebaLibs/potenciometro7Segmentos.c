@@ -27,7 +27,14 @@ unsigned char digits_refreshed[4];
 
 void sieteSeg_init(){
   init_temporizador(FACTOR_T);
-  configurar_puerto('G', 1, "0 1 2 3 4 5 6 7");
+  configurar_puerto('G', 1, 0);
+  configurar_puerto('G', 1, 1);
+  configurar_puerto('G', 1, 2);
+  configurar_puerto('G', 1, 3);
+  configurar_puerto('G', 1, 4);
+  configurar_puerto('G', 1, 5);
+  configurar_puerto('G', 1, 6);
+  configurar_puerto('G', 1, 7);
   atd_default_config(PUERTO_ATD);
   atd_activate_module(PUERTO_ATD);
 }
@@ -37,26 +44,27 @@ void sieteSeg_init(){
  * 4 bytes. A partir de ese momento se mostrará en cada 7-segmentos valor correspondiente a
  * las primeras 4 posiciones del array pasado.
  */
-void refrescar7Seg(void * ptr){
-  unsigned char * digito;
-  digito = (unsigned char*)ptr;
-  static int n7S = 0; //número 7 segmento (7-segmento que se enciende)
-  _io_ports[M6812_PORTG] = digito[n7S];
-  (n7S == 3) ? n7S = 0 : n7S++;
+void refrescar7Seg(void){
+  static int i = 0; //7-segmento que se enciende
+  _io_ports[M6812_PORTG] = digits_refreshed[i];
+  (i == 3) ? i = 0 : i++;
 }
 
 void sieteSeg_digitos(unsigned char* digito){
   /** 1000 = [1][0][0][0] 
    *          0  1  2  3  **/
-  unsigned char digitMask;
+  unsigned char activate7S;
   int digitPos;
   for (digitPos = 0; digitPos < 4; digitPos++){ //Configurar el 7-segmento que se enciende
-    digitMask = 1 << (7 - digitPos);      //10000000 >> digitPos
-    digitMask |= 0x0f;                    //00010000 |= 00011111
-    digito[digitPos] |= 0xf0;             //xxxxyyyy |= 11110000 = 1111yyyy
-    digito[digitPos] &= digitMask;        //1111yyyy &= 00011111 = 0001yyyy
+    activate7S = 0x80 >> digitPos;      //10000000 >> digitPos
+    digito[digitPos] |= activate7S;
+    digito[digitPos] &= activate7S;
   }
-  runEveryUsg(refrescar7Seg, (void*) digito, 1000UL);
+  digits_refreshed[0] = digito[0]; // No se puede digits_refreshed = digito
+  digits_refreshed[1] = digito[1]; // ni &digits_refreshed = digito
+  digits_refreshed[2] = digito[2];
+  digits_refreshed[3] = digito[3];
+  runEveryUsg(refrescar7Seg, 1000UL);
 }
 
 /**

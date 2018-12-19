@@ -1,6 +1,30 @@
 var searchData=
 [
-  ['delayusg',['delayusg',['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c']]],
-  ['dist_5fad',['DIST_AD',['../group__atd.html#gad3e95c1a1f87a3097e2a0db5356ce2eb',1,'atd.h']]],
-  ['dist_5fres',['DIST_RES',['../group__atd.html#gaaf0cfc0d66b51bdaa93620741562c874',1,'atd.h']]]
+  ['da',['da',['../_ejemplos_2_saca7_segmentos_8c.html#ad25c129debc137d74e3adb709214cc40',1,'da():&#160;Saca7Segmentos.c'],['../old_2_ejemplos_2_saca7_segmentos_8c.html#ad25c129debc137d74e3adb709214cc40',1,'da():&#160;Saca7Segmentos.c'],['../old2_2_ejemplos_2_saca7_segmentos_8c.html#ad25c129debc137d74e3adb709214cc40',1,'da():&#160;Saca7Segmentos.c']]],
+  ['data_5fsize',['DATA_SIZE',['../group__params.html#gaf55149bc1f05cf18af067a302e31e3f9',1,'DATA_SIZE():&#160;param.h'],['../group__params.html#gaf55149bc1f05cf18af067a302e31e3f9',1,'DATA_SIZE():&#160;param.h']]],
+  ['debug',['DEBUG',['../_ejemplos_2_esqueleto_display_8c.html#ad72dbcf6d0153db1b8d8a58001feed83',1,'DEBUG():&#160;EsqueletoDisplay.c'],['../old2_2_ejemplos_2_esqueleto_display_8c.html#ad72dbcf6d0153db1b8d8a58001feed83',1,'DEBUG():&#160;EsqueletoDisplay.c']]],
+  ['defines_5f0_2ejs',['defines_0.js',['../defines__0_8js.html',1,'']]],
+  ['defines_5f1_2ejs',['defines_1.js',['../defines__1_8js.html',1,'']]],
+  ['defines_5f2_2ejs',['defines_2.js',['../defines__2_8js.html',1,'']]],
+  ['defines_5f3_2ejs',['defines_3.js',['../defines__3_8js.html',1,'']]],
+  ['defines_5f4_2ejs',['defines_4.js',['../defines__4_8js.html',1,'']]],
+  ['defines_5f5_2ejs',['defines_5.js',['../defines__5_8js.html',1,'']]],
+  ['defines_5f6_2ejs',['defines_6.js',['../defines__6_8js.html',1,'']]],
+  ['defines_5f7_2ejs',['defines_7.js',['../defines__7_8js.html',1,'']]],
+  ['defines_5f8_2ejs',['defines_8.js',['../defines__8_8js.html',1,'']]],
+  ['defines_5f9_2ejs',['defines_9.js',['../defines__9_8js.html',1,'']]],
+  ['defines_5fa_2ejs',['defines_a.js',['../defines__a_8js.html',1,'']]],
+  ['defines_5fb_2ejs',['defines_b.js',['../defines__b_8js.html',1,'']]],
+  ['delayusg',['delayusg',['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;EsqueletoDisplay.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador2.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;DelayUsg.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;EsqueletoDisplay.c'],['../group__temporizador.html#ga4518ffcb3b15a38f30dd772902e958d0',1,'delayusg(unsigned long useg):&#160;temporizador.c']]],
+  ['delayusg_2ec',['DelayUsg.c',['../_ejemplos_2_delay_usg_8c.html',1,'(Global Namespace)'],['../old_2_ejemplos_2_delay_usg_8c.html',1,'(Global Namespace)'],['../old2_2_ejemplos_2_delay_usg_8c.html',1,'(Global Namespace)']]],
+  ['digi7s',['digi7s',['../_ejemplos_2_saca7_segmentos_8c.html#ae79f668b10c06902a4bf4c478ba69c3f',1,'digi7s():&#160;Saca7Segmentos.c'],['../old_2_ejemplos_2_saca7_segmentos_8c.html#ae79f668b10c06902a4bf4c478ba69c3f',1,'digi7s():&#160;Saca7Segmentos.c'],['../old2_2_ejemplos_2_saca7_segmentos_8c.html#ae79f668b10c06902a4bf4c478ba69c3f',1,'digi7s():&#160;Saca7Segmentos.c']]],
+  ['digits_5frefreshed',['digits_refreshed',['../old2_2prueba_libs_2potenciometro7_segmentos_8c.html#a0f4144afab49e69473fea97aa2e48b86',1,'digits_refreshed():&#160;potenciometro7Segmentos.c'],['../prueba_libs_2potenciometro7_segmentos_8c.html#a0f4144afab49e69473fea97aa2e48b86',1,'digits_refreshed():&#160;potenciometro7Segmentos.c']]],
+  ['disp_5foff',['DISP_OFF',['../_ejemplos_2_esqueleto_display_8c.html#a9155c32c7a7a5271ba003943e3df9653',1,'DISP_OFF():&#160;EsqueletoDisplay.c'],['../old2_2_ejemplos_2_esqueleto_display_8c.html#a9155c32c7a7a5271ba003943e3df9653',1,'DISP_OFF():&#160;EsqueletoDisplay.c']]],
+  ['disp_5fon',['DISP_ON',['../_ejemplos_2_esqueleto_display_8c.html#ac7642bc1b667d6f1109533a5c822de0d',1,'DISP_ON():&#160;EsqueletoDisplay.c'],['../old2_2_ejemplos_2_esqueleto_display_8c.html#ac7642bc1b667d6f1109533a5c822de0d',1,'DISP_ON():&#160;EsqueletoDisplay.c']]],
+  ['dist_5fad',['DIST_AD',['../group__atd.html#gad3e95c1a1f87a3097e2a0db5356ce2eb',1,'DIST_AD():&#160;atd.h'],['../group__atd.html#gad3e95c1a1f87a3097e2a0db5356ce2eb',1,'DIST_AD():&#160;atd.h']]],
+  ['dist_5fres',['DIST_RES',['../group__atd.html#gaaf0cfc0d66b51bdaa93620741562c874',1,'DIST_RES():&#160;atd.h'],['../group__atd.html#gaaf0cfc0d66b51bdaa93620741562c874',1,'DIST_RES():&#160;atd.h']]],
+  ['divider_5fcalc',['divider_calc',['../group__pwdlib.html#gaeb4682557c07372019899a1cb8d7bb3d',1,'divider_calc(unsigned long frequency):&#160;pwm_lib.c'],['../group__pwdlib.html#gaeb4682557c07372019899a1cb8d7bb3d',1,'divider_calc(unsigned long frequency):&#160;pwm_lib.c']]],
+  ['dl_5f8bits',['DL_8BITS',['../_ejemplos_2_esqueleto_display_8c.html#a3bd92d8826c146de19e3d2a23c07ff51',1,'DL_8BITS():&#160;EsqueletoDisplay.c'],['../old2_2_ejemplos_2_esqueleto_display_8c.html#a3bd92d8826c146de19e3d2a23c07ff51',1,'DL_8BITS():&#160;EsqueletoDisplay.c']]],
+  ['dos_5ffilas',['DOS_FILAS',['../_ejemplos_2_esqueleto_display_8c.html#ab92008c511e0006c0cd5cb97b4919ee5',1,'DOS_FILAS():&#160;EsqueletoDisplay.c'],['../old2_2_ejemplos_2_esqueleto_display_8c.html#ab92008c511e0006c0cd5cb97b4919ee5',1,'DOS_FILAS():&#160;EsqueletoDisplay.c']]],
+  ['dynsections_2ejs',['dynsections.js',['../dynsections_8js.html',1,'']]]
 ];

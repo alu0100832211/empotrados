@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['null',['NULL',['../stdio_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4',1,'stdio.h']]]
+  ['itera_5fcambio',['ITERA_CAMBIO',['../_ejemplos_2_lee_analogica_8c.html#a1b9195c03b97c492529eb795c60c59f0',1,'ITERA_CAMBIO():&#160;LeeAnalogica.c'],['../old2_2_ejemplos_2_lee_analogica_8c.html#a1b9195c03b97c492529eb795c60c59f0',1,'ITERA_CAMBIO():&#160;LeeAnalogica.c']]]
 ];

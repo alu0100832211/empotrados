@@ -1,6 +1,14 @@
 #include <atd.h>
 
+unsigned short lastResults[8];
+unsigned short lastN;
+
 char start_pin[8] = {A_IN_0, A_IN_1, A_IN_2, A_IN_3, A_IN_4, A_IN_5, A_IN_6, A_IN_7};
+
+unsigned short * resultDest;
+unsigned short * nDest;
+
+void (*interruptAction_f)(unsigned short*, unsigned short*);
 
 void atd_set_resolution10( unsigned short port){
     if( port <= 1)
@@ -109,10 +117,6 @@ void atd_get_data(unsigned short * data, unsigned short * n , unsigned short por
             data[inx%8] |= _io_ports[(M6812_ADR00H + port*DIST_AD) + (inx%8)*DIST_RES];
             data[inx%8] = data[inx%8] << 8;
             data[inx%8] |= _io_ports[(M6812_ADR00L + port*DIST_AD) + (inx%8)*DIST_RES];
-            if(!(_io_ports[M6812_ATD0CTL2 + port*DIST_AD] & M6812B_DJM)){
-                unsigned short shift = (_io_ports[M6812_ATD0CTL4 + port*DIST_AD] & M6812B_RES10)? 6 : 8;
-                data[inx%8] = data[inx%8] >> shift;
-	    }
             inx++;
         }
         (*n) = n_conversiones;
@@ -142,12 +146,15 @@ void atd_align_left(int left, unsigned short port){
 int atd_start_conversion(unsigned short port){
     int res = false;
     if(port <= 1){
-        if(!(_io_ports[M6812_ATD0STAT0 + port*DIST_AD] & M6812B_SCF)){
-            _io_ports[M6812_ATD0CTL5 + port*DIST_AD] = _io_ports[M6812_ATD0CTL5 + port*DIST_AD];
+	char prevState = _io_ports[M6812_ATD0CTL5 + port*DIST_AD];
+	_io_ports[M6812_ATD0CTL5 + port*DIST_AD] = 0;
+	_io_ports[M6812_ATD0CTL5 + port*DIST_AD] = prevState;
+        /*if(!(_io_ports[M6812_ATD0STAT0 + port*DIST_AD] & M6812B_SCF)){
+
             res = true;
-	      }
-	  }
-    return res;
+	}*/
+    }
+    return true;
 }
 
 
@@ -220,7 +227,7 @@ void atd_default_config(unsigned short port){
     atd_set_successive_conversions(1, port);
 
     // Justificacion a la izquierda
-    atd_align_left(true,port);
+    atd_align_left(false,port);
 
     // Resetear al Leer
     atd_reset_on_read(true, port);
@@ -239,4 +246,31 @@ void atd_default_config(unsigned short port){
     atd_read_multiple_pin(false, port);
 
     // Encender puerto 0
+}
+
+void __attribute__((interrupt)) vi_atd(void){
+    char port = ((_io_ports[M6812_ATD0STAT0] && M6812B_SCF)? 0: 1);
+    _io_ports[M6812_ATD0CTL2 + port*DIST_AD] &= ~(M6812B_ASCIF);
+
+    atd_get_data(&lastResults[0], &lastN, port);
+
+
+
+    (*interruptAction_f)(resultDest,nDest);
+
+
+}
+
+void atd_get_last_result(unsigned short * result, unsigned short * n){
+    unsigned short i=0;
+    for(i=0; i < lastN; i++){
+	result[i] = lastResults[i];
+    }
+    (*n) = lastN;
+}
+
+void atd_interruptAction(void (*f)(unsigned short*, unsigned short*), unsigned short * result, unsigned short * n){
+    interruptAction_f = f;
+    resultDest = result;
+    nDest = n;
 }

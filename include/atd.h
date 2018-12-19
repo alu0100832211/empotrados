@@ -33,12 +33,12 @@
 #define A_IN_6 (M6812B_CC | M6812B_CB)
 #define A_IN_7 (M6812B_CC | M6812B_CB | M6812B_CA)
 
-/*typedef int int;*/
+//typedef int int;
 #define true 1
 #define false 0
 
-/*typedef char char;*/
-/*typedef unsigned short unsigned short;*/
+//typedef char char;
+//typedef unsigned short unsigned short;
 
 /**
  * @brief Permite establecer la resolución a 10 bits.
@@ -75,7 +75,7 @@ inline void atd_set_start_pin(unsigned short pin, unsigned short port);
 
 /**
  * @brief Función para configurar el reloj del submódulo.
- * @param val Seleccionador de frecuencia.
+ * @param val Seleccionador de frecuencia [1-7].
  * @param port Indica el puerto sobre el que se aplicará la acción.
  */
 void atd_set_submodule_clock(char val, unsigned short port);
@@ -177,6 +177,21 @@ void atd_deactivate_interrupt(unsigned short port);
  */
 void atd_default_config(unsigned short port);
 
+/**
+ * @brief Función para obtener la última conversión realizada. Actualmente solo es útil cuando se usan interrupciones
+ * @param result Puntero al array donde se almacenará el resultado de la conversión
+ * @param n	 Puntero a la variable donde se almacenarán el número de conversiones realizadas
+ */
+
+
+void atd_get_last_result(unsigned short * result, unsigned short * n);
+
+/**
+ * @brief Función para instalar el manejador de fin de conversión
+ * @param result Puntero al array donde se almacenará el resultado de la conversión
+ * @param n	 Puntero a la variable donde se almacenarán el número de conversiones realizadas
+ */
+void atd_interruptAction(void (*f)(unsigned short*, unsigned short*), unsigned short * result, unsigned short * n);
 
 /*@}*/
 

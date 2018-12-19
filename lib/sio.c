@@ -1,6 +1,6 @@
 /* Serial line operations
    Copyright (C) 1999, 2000 Free Software Foundation, Inc.
-   Written by Stephane Carrez (stcarrez@worldnet.fr)	
+   Written by Stephane Carrez (stcarrez@worldnet.fr)
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -92,16 +92,17 @@ void serial_printbinword(unsigned short sa) {
 
 
 unsigned char serial_gethexbyte() {
-  char c,cM;
+  char c;
+  char cM = 0;
   unsigned char numC=0;
   unsigned char tot=0;
 
   do {
     c=serial_recv();
 
-    if(numC<2 && 
+    if(numC<2 &&
        (
-        (c>='0' && c<='9') 
+        (c>='0' && c<='9')
         ||((cM=c&(~0x20))>='A' && cM<='F')
         )
        ) {
@@ -122,16 +123,17 @@ unsigned char serial_gethexbyte() {
 }
 
 unsigned short serial_gethexword() {
-  char c,cM;
+  char c;
+  char cM = 0;
   unsigned char numC=0;
   unsigned short tot=0;
 
   do {
     c=serial_recv();
 
-    if(numC<4 && 
+    if(numC<4 &&
        (
-        (c>='0' && c<='9') 
+        (c>='0' && c<='9')
         ||((cM=c&(~0x20))>='A' && cM<='F')
         )
        ) {
@@ -189,7 +191,7 @@ unsigned char serial_getdecbyte()
       tot=tot/10; /*quitamos último digito entrado*/
       numC--;
     }
-    
+
   } while(numC==0 || c!='\r');
   return tot;
 }
@@ -220,8 +222,43 @@ unsigned short serial_getdecword()
       tot=tot/10; /*quitamos último digito entrado*/
       numC--;
     }
-    
+
   } while(numC==0 || c!='\r');
+  return tot;
+}
+
+
+unsigned long serial_getdeclong()
+{
+  char c;
+  unsigned char numC;
+  unsigned long tot,nTot;
+  tot = 0;
+  numC = 0;
+  do {
+    c = serial_recv();
+    if(c >= '0' && c <= '9') {
+      if (tot <= (0xFFFFFFFF/10)) {
+        nTot = (tot * 10);
+        unsigned char u = (c - '0');
+        if (nTot <= (0xFFFFFFFF-u)) {
+          /* Admitimos el caracter*/
+          serial_send(c);
+          tot=nTot + u;
+          numC++;
+        }
+      }
+    }
+    if(numC > 0 && c == '\b') {
+      /*se pulsó borrar */
+      serial_send('\b');
+      serial_send(' ');
+      serial_send('\b');
+      tot = tot / 10; /*quitamos último digito entrado*/
+      numC--;
+    }
+
+  } while(numC == 0 || c != '\r');
   return tot;
 }
 
@@ -238,6 +275,21 @@ void serial_printdecword(unsigned short sa) {
   else
     for(;da>0;da--)
       serial_send(dg[da-1]);
+}
+
+void serial_printdeclong(unsigned long sa) {
+  char dg[10];
+  unsigned char da = 0;
+  while(sa != 0) {
+    dg[da] = (sa % 10)+'0';
+    da++;
+    sa = sa / 10;
+  }
+  if(da == 0) /*vale 0*/
+    serial_send('0');
+  else
+    for(; da > 0; da--)
+      serial_send(dg[da - 1]);
 }
 
 void serial_printdecbyte(unsigned char ba) {
