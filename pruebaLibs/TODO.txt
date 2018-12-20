@@ -1,0 +1,4 @@
+1. Probar potssd.c
+2. Probar teclado
+3. Probar pwm
+4. Probar bomba
