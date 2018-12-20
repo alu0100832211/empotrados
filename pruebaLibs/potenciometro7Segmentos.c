@@ -19,7 +19,7 @@
  * variable global
  ***************************************************************/
 #define FACTOR_T 7
-#define PUERTO_ATD 1
+#define PUERTO_ATD 0
 
 /***************** VARIABLES GLOBALES **************************/
 unsigned char digits_refreshed[4];
@@ -55,10 +55,12 @@ void sieteSeg_digitos(unsigned char* digito){
    *          0  1  2  3  **/
   unsigned char activate7S;
   int digitPos;
+  serial_init();
+
   for (digitPos = 0; digitPos < 4; digitPos++){ //Configurar el 7-segmento que se enciende
     activate7S = 0x80 >> digitPos;      //10000000 >> digitPos
     digito[digitPos] |= activate7S;
-    digito[digitPos] &= activate7S;
+    //digito[digitPos] &= activate7S;
   }
   digits_refreshed[0] = digito[0]; // No se puede digits_refreshed = digito
   digits_refreshed[1] = digito[1]; // ni &digits_refreshed = digito
@@ -72,7 +74,7 @@ void sieteSeg_digitos(unsigned char* digito){
  */
 void sieteSeg_valor(unsigned int numero){
   int i;
-  for (i = 0; i < 4; i++){
+  for (i = 3; i >= 0; i--){
     digits_refreshed[i] = numero % 10;
     numero /= 10;
   }
@@ -82,16 +84,21 @@ void sieteSeg_valor(unsigned int numero){
 
 
 int main (void){
+  sieteSeg_init();
+  serial_init();
+  unsigned short data = 0;
   while(1){
     /* Iniciar la conversión */
-    atd_start_conversion(PUERTO_ATD);
+    atd_default_config(PUERTO_ATD);
     /* Esperar a que termine la conversión */
     atd_wait_for_conversor(PUERTO_ATD);
     /* Devolver los valores leidos */
-    unsigned short data;
     unsigned short nConversiones;
-
     atd_get_data(&data, &nConversiones, PUERTO_ATD);
+    delayusg(10000);
+    serial_printdecword(data);
+    serial_print("\n");
+    //serial_recv();
     sieteSeg_valor(data);
   }
 }
