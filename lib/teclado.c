@@ -1,6 +1,4 @@
-#include <temporizador.h>
-#include <e_s_lib.h>
-
+#include <teclado.h>
 /* Máscaras para conexionado loco */
 #define C1 0x10     // 00010000
 #define C2 0x40     // 01000000
@@ -102,19 +100,4 @@ char teclado_getch_timeout(unsigned int milis){
  }
 
  return 'T';
-}
-
-int main(void){
-  serial_init();
-  teclado_init();
-  char letra;
-  while(1){
-  /* Bits de columnas estan a 1 ??*/
-    letra = teclado_getch();
-    serial_print("teclado_getch()\nLetra recibida: ");
-    serial_print(&letra);
-    serial_print("teclado_getch_timeout(2000ms)\nLetra recibida: ");
-    letra = teclado_getch_timeout(2000);
-    serial_print(&letra);
-  }
 }
