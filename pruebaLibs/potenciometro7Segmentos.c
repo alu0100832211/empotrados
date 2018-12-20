@@ -88,14 +88,12 @@ int main (void){
   serial_init();
   unsigned short data = 0;
   while(1){
-    /* Iniciar la conversión */
-    atd_default_config(PUERTO_ATD);
     /* Esperar a que termine la conversión */
     atd_wait_for_conversor(PUERTO_ATD);
     /* Devolver los valores leidos */
     unsigned short nConversiones;
     atd_get_data(&data, &nConversiones, PUERTO_ATD);
-    delayusg(10000);
+    delayusg(100000UL);
     serial_printdecword(data);
     serial_print("\n");
     //serial_recv();

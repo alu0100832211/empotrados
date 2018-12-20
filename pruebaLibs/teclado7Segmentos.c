@@ -2,8 +2,15 @@
 #include <e_s_lib.h>
 
 /* Los bits a 1 son los que el puerto está usando */
-#define COL_M 0x07 //  00000111
-#define FIL_M 0x0f //  00001111
+#define COL_M 0x54 //  01010100
+#define FIL_M 0x2B //  00101011
+#define C1 // 00010000
+#define C2 // 00000000
+#define C3 // 00010000
+#define F1 // 00010000
+#define F2 // 00010000
+#define F3 // 00010000
+#define F4 // 00010000
 #define FACTOR_T 7
 /******************** POSIBLES PROBLEMAS ********************
  * Libreria e/s no permite poner sólo un conjunto de pines como pull up
@@ -24,27 +31,17 @@ void teclado_init(){
   init_temporizador(FACTOR_T);
   /* Conexionado
    * C2 F1 C1 F4 C3 F3 F2 Pines de Dixen
-   * H1 G0 H0 G3 H2 G2 G1 Pin puerto ADAPT */
-
-  /* Problema: no permite subconjunto pines en pull-up 
-   * con lo cual hay que usar distintos puertos para
-   * entrada y salida */
-
-  /* G = FILAS = SALIDA */
-  configurar_puerto('G', 1, 0);
-  configurar_puerto('G', 1, 1);
-  configurar_puerto('G', 1, 2);
-  configurar_puerto('G', 1, 3);
+   *  0  1  0  1  0  1  1 */
+  configurar_puerto('H', 0, 0);
+  configurar_puerto('H', 1, 1);
+  configurar_puerto('H', 0, 2);
+  configurar_puerto('H', 1, 3);
+  configurar_puerto('H', 0, 4);
+  configurar_puerto('H', 1, 5);
+  configurar_puerto('H', 1, 6);
 
   /* Todas las filas a 0 */
-  escribir_puerto('G', 0);
-
-  /* H = COLUMNAS = ENTRADA */
-  configurar_puerto('H', 0, 0);
-  configurar_puerto('H', 0, 1);
-  configurar_puerto('H', 0, 2);
-
-  /* COLUMNAS = resistencias pull-up */
+  escribir_puerto('H', 0);
   pull_up('H', 1);
 }
 
@@ -56,30 +53,31 @@ char teclado_getch(){
   while((_io_ports[M6812_PORTH] & COL_M ) == COL_M);
   /* Estabilización del valor 20 msg = 20000 useg*/
   delayusg(20000UL);
-  /* Guardar la columna detectada */
-  unsigned char bitPulsacion = !(_io_ports[M6812_PORTH] & COL_M); /*Dejar un 1 en la posicion de la columna*/
+  /* Calcular la columna          */
+  unsigned char bitPulsacion = !((_io_ports[M6812_PORTH] | !COL_M)& COL_M); 
   int i = 0;
-  unsigned char bitPulsacion_aux = bitPulsacion;
-  while(bitPulsacion_aux > 1){
-    bitPulsacion_aux = bitPulsacion_aux >> 1;
-    i++;
+  unsigned char aux = bitPulsacion;
+  while(aux > 1){
+    if(aux & 1) i++;
+    aux >>= 1;
   }
   int colPulsacion = i;
+  /* Calcular la fila */
   /* Escribir 1 en todas las filas */
-  _io_ports[M6812_PORTG] |= FIL_M; 
-  
+  _io_ports[M6812_PORTH] |= FIL_M; 
   int filaPulsacion = 0;
   /* Poner cada fila a 0 */
   for (i = 0; i < 4; i++){
-    _io_ports[M6812_PORTG] &= !(1 << i);
+    _io_ports[M6812_PORTH] &= !(1 << i);
     if (!(_io_ports[M6812_PORTH] & bitPulsacion)){ /* Si la columna pulsada baja a 0 */
       filaPulsacion = i;
       break;
     }
-    _io_ports[M6812_PORTG] |= (1 << i);
+    _io_ports[M6812_PORTH] |= (1 << i);
   }
+
   /* Esperar a soltar la tecla */
-  _io_ports[M6812_PORTG] &= !FIL_M; 
+  _io_ports[M6812_PORTH] &= !FIL_M; 
   while((_io_ports[M6812_PORTH] & COL_M ) != COL_M);
   delayusg(20000UL);
 
