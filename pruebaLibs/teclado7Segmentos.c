@@ -1,22 +1,23 @@
 #include <temporizador.h>
 #include <e_s_lib.h>
 
-/* Los bits a 1 son los que el puerto está usando */
-#define COL_M 0x54 //  01010100
-#define FIL_M 0x2B //  00101011
-#define C1 // 00010000
-#define C2 // 00000000
-#define C3 // 00010000
-#define F1 // 00010000
-#define F2 // 00010000
-#define F3 // 00010000
-#define F4 // 00010000
+/* Máscaras para conexionado loco */
+#define C1 0x10     // 00010000
+#define C2 0x40     // 01000000
+#define C3 0x04     // 00000100
+#define F1 0x20     // 00100000
+#define F2 0x01     // 00000001
+#define F3 0x02     // 00000010
+#define F4 0x08     // 00001000
+#define COL_M (C1 | C2 | C3)        // 01010100
+#define FIL_M (F1 | F2 | F3 | F4)   // 00101011
 #define FACTOR_T 7
-/******************** POSIBLES PROBLEMAS ********************
- * Libreria e/s no permite poner sólo un conjunto de pines como pull up
- * Solucion: usar puertos distintos
- * Se traga la definicion de teclado?
- ************************************************************/
+
+/**********Conexionado******************** 
+* C2 F1 C1 F4 C3 F3 F2 Pines de Dixen    *
+*  0  1  0  1  0  1  1 Entrada/Salida    * 
+* ***************************************/
+
 
 /******************* VARIABLES GLOBALES *********************/
 char teclado[4][3] = {
@@ -26,12 +27,16 @@ char teclado[4][3] = {
   {'7','8','9' }, // F2
   {'*','0','#' }, // F2
 };
+
+char colBit[3] = {C1 , C2, C3};
+char filBit[4] = {F1, F2, F3, F4};
 /************************************************************/
 void teclado_init(){
   init_temporizador(FACTOR_T);
-  /* Conexionado
-   * C2 F1 C1 F4 C3 F3 F2 Pines de Dixen
-   *  0  1  0  1  0  1  1 */
+/**********Conexionado******************** 
+* C2 F1 C1 F4 C3 F3 F2 Pines de Dixen    *
+*  0  1  0  1  0  1  1 Entrada/Salida    * 
+* ***************************************/
   configurar_puerto('H', 0, 0);
   configurar_puerto('H', 1, 1);
   configurar_puerto('H', 0, 2);
@@ -45,6 +50,30 @@ void teclado_init(){
   pull_up('H', 1);
 }
 
+int getColPulsacion(unsigned char portBits){
+  portBits &= COL_M;
+  int i;
+  for(i = 0; i < 3; i++){
+    if(portBits & colBit[i])
+      break;
+  }
+  return i;
+}
+
+int getFilPulsacion(int colPulsacion){
+  /* Escribir 1 en todas las filas */
+  _io_ports[M6812_PORTH] |= FIL_M; 
+  int i;
+  /* Poner cada fila a 0 */
+  for (i = 0; i < 4; i++){
+    _io_ports[M6812_PORTH] &= !filBit[i];
+    if (!(_io_ports[M6812_PORTH] & colBit[colPulsacion]))
+      break;
+    _io_ports[M6812_PORTH] |= filBit[i];
+  }
+  return i;
+}
+
 char teclado_getch(){
   /* Salir si columnas no están a 1 */
   if ((_io_ports[M6812_PORTH] & COL_M ) != COL_M)
@@ -53,29 +82,8 @@ char teclado_getch(){
   while((_io_ports[M6812_PORTH] & COL_M ) == COL_M);
   /* Estabilización del valor 20 msg = 20000 useg*/
   delayusg(20000UL);
-  /* Calcular la columna          */
-  unsigned char bitPulsacion = !((_io_ports[M6812_PORTH] | !COL_M)& COL_M); 
-  int i = 0;
-  unsigned char aux = bitPulsacion;
-  while(aux > 1){
-    if(aux & 1) i++;
-    aux >>= 1;
-  }
-  int colPulsacion = i;
-  /* Calcular la fila */
-  /* Escribir 1 en todas las filas */
-  _io_ports[M6812_PORTH] |= FIL_M; 
-  int filaPulsacion = 0;
-  /* Poner cada fila a 0 */
-  for (i = 0; i < 4; i++){
-    _io_ports[M6812_PORTH] &= !(1 << i);
-    if (!(_io_ports[M6812_PORTH] & bitPulsacion)){ /* Si la columna pulsada baja a 0 */
-      filaPulsacion = i;
-      break;
-    }
-    _io_ports[M6812_PORTH] |= (1 << i);
-  }
-
+  int colPulsacion = getColPulsacion(_io_ports[M6812_PORTH]);
+  int filaPulsacion = getFilPulsacion(colPulsacion);
   /* Esperar a soltar la tecla */
   _io_ports[M6812_PORTH] &= !FIL_M; 
   while((_io_ports[M6812_PORTH] & COL_M ) != COL_M);
