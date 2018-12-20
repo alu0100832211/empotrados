@@ -1,6 +1,4 @@
-#include <temporizador.h>
-#include <e_s_lib.h>
-#include <atd.h>
+#include <ssd.h>
 /***************** POSIBLES PROBLEMAS ***************************
  * Probar llamar runEveryUseg runAfterUseg varias veces
  * Probar llamar runEveryUseg runAfterUseg con argumentos
@@ -19,7 +17,6 @@
  * variable global
  ***************************************************************/
 #define FACTOR_T 7
-#define PUERTO_ATD 0
 
 /***************** VARIABLES GLOBALES **************************/
 unsigned char digits_refreshed[4];
@@ -35,8 +32,6 @@ void sieteSeg_init(){
   configurar_puerto('G', 1, 5);
   configurar_puerto('G', 1, 6);
   configurar_puerto('G', 1, 7);
-  atd_default_config(PUERTO_ATD);
-  atd_activate_module(PUERTO_ATD);
 }
 /**
  * @brief Escribe digitos en siete-segmentos
@@ -82,21 +77,3 @@ void sieteSeg_valor(unsigned int numero){
   sieteSeg_digitos(digits_refreshed);
 }
 
-
-int main (void){
-  sieteSeg_init();
-  serial_init();
-  unsigned short data = 0;
-  while(1){
-    /* Esperar a que termine la conversión */
-    atd_wait_for_conversor(PUERTO_ATD);
-    /* Devolver los valores leidos */
-    unsigned short nConversiones;
-    atd_get_data(&data, &nConversiones, PUERTO_ATD);
-    delayusg(100000UL);
-    serial_printdecword(data);
-    serial_print("\n");
-    //serial_recv();
-    sieteSeg_valor(data);
-  }
-}

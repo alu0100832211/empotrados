@@ -33,7 +33,6 @@ fuentes:=$(wildcard *.c)
 
 s19s:=$(fuentes:.c=.s19)
 
-probarTeclado.s19: teclado.o
 #
 # .elf is for the simulator and gdb
 # .s19 is for some downloader and the simulator
