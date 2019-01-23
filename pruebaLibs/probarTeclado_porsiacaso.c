@@ -36,8 +36,9 @@ void teclado_init(){
 /**********Conexionado******************** 
 * C2 F1 C1 F4 C3 F3 F2 Pines de Dixen    *
 *  0  1  0  1  0  1  1 Entrada/Salida    * 
-*  0 Entrada 1 Salida
-* ***************************************/
+* H6 H5 H4 H3 H2 H1 H0                   *
+*  0 Entrada 1 Salida                    * 
+*  ***************************************/ 
   configurar_puerto('H', 0, 0);
   configurar_puerto('H', 0, 2);
   configurar_puerto('H', 0, 4);
