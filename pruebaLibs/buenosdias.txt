@@ -1,0 +1,8 @@
+Buenos dias
+1. Probar que funciona el potenciometro 7 segmentos: potssd_porsiacaso.s19
+2. Probar que funciona el teclado: probarTeclado_porsiacaso.s19
+3. Probar que funciona PWM:
+    1. Probar el ejemplo de johny
+    2. Cambiar código de pruebaPWM.c
+4. Arreglar la parte de PWM de bomba.c
+5. Sacar un 10
