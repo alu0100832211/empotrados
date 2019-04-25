@@ -36,14 +36,20 @@ void teclado_init(){
 /**********Conexionado******************** 
 * C2 F1 C1 F4 C3 F3 F2 Pines de Dixen    *
 *  0  1  0  1  0  1  1 Entrada/Salida    * 
-* ***************************************/
+* H6 H5 H4 H3 H2 H1 H0                   *
+*  0 Entrada 1 Salida                    * 
+*  ***************************************/ 
   configurar_puerto('H', 0, 0);
-  configurar_puerto('H', 1, 1);
   configurar_puerto('H', 0, 2);
-  configurar_puerto('H', 1, 3);
   configurar_puerto('H', 0, 4);
+  configurar_puerto('H', 0, 3);
+  configurar_puerto('H', 0, 1);
+  configurar_puerto('H', 0, 5);
+  configurar_puerto('H', 0, 6);
+  configurar_puerto('H', 1, 0);
+  configurar_puerto('H', 1, 1);
+  configurar_puerto('H', 1, 3);
   configurar_puerto('H', 1, 5);
-  configurar_puerto('H', 1, 6);
 
   /* Todas las filas a 0 */
   escribir_puerto('H', 0);
@@ -52,11 +58,21 @@ void teclado_init(){
 
 int getColPulsacion(unsigned char portBits){
   portBits &= COL_M;
+  //serial_print("\n");
+  //serial_print("Col pulsada: portBits ");
+  //serial_printbinbyte(~portBits);
+  //serial_print("\n");
   int i;
   for(i = 0; i < 3; i++){
-    if(portBits & colBit[i])
+  //  serial_printbinbyte(colBit[i]);
+  //  serial_print(" & ");
+  //  serial_printbinbyte(!portBits);
+  //  serial_print("\n");
+    if(~portBits & colBit[i])
       break;
   }
+  //serial_printdecbyte(i);
+  //serial_print("\n");
   return i;
 }
 
@@ -66,18 +82,22 @@ int getFilPulsacion(int colPulsacion){
   int i;
   /* Poner cada fila a 0 */
   for (i = 0; i < 4; i++){
-    _io_ports[M6812_PORTH] &= !filBit[i];
+    _io_ports[M6812_PORTH] &= ~filBit[i];
     if (!(_io_ports[M6812_PORTH] & colBit[colPulsacion]))
       break;
     _io_ports[M6812_PORTH] |= filBit[i];
   }
+  //serial_printdecbyte(i);
+  //serial_print("\n");
   return i;
 }
 
 char teclado_getch(){
   /* Salir si columnas no están a 1 */
-  if ((_io_ports[M6812_PORTH] & COL_M ) != COL_M)
-    return 'E';
+//  if ((_io_ports[M6812_PORTH] & COL_M ) != COL_M){
+//    serial_print("columnas no están a 1\n");
+//    return 'E';
+//  }
   /* Esperar a que alguna columna llegue a 0 */
   while((_io_ports[M6812_PORTH] & COL_M ) == COL_M);
   /* Estabilización del valor 20 msg = 20000 useg*/
@@ -85,11 +105,19 @@ char teclado_getch(){
   int colPulsacion = getColPulsacion(_io_ports[M6812_PORTH]);
   int filaPulsacion = getFilPulsacion(colPulsacion);
   /* Esperar a soltar la tecla */
-  _io_ports[M6812_PORTH] &= !FIL_M; 
+  _io_ports[M6812_PORTH] &= ~FIL_M; 
   while((_io_ports[M6812_PORTH] & COL_M ) != COL_M);
   delayusg(20000UL);
+  
+  //serial_print("Fila: ");
+  //serial_print(filaPulsacion);
+  //serial_print("\n");
+  //serial_print("Columna: ");
+  //serial_print(colPulsacion);
+  //serial_print("\n");
 
   return teclado[filaPulsacion][colPulsacion];
+
 }
 
 char teclado_getch_timeout(unsigned int milis){
@@ -108,13 +136,25 @@ int main(void){
   serial_init();
   teclado_init();
   char letra;
+  serial_print("Programa de prueba del teclado\n");
   while(1){
-  /* Bits de columnas estan a 1 ??*/
     letra = teclado_getch();
-    serial_print("teclado_getch()\nLetra recibida: ");
-    serial_print(&letra);
-    serial_print("teclado_getch_timeout(2000ms)\nLetra recibida: ");
-    letra = teclado_getch_timeout(2000);
-    serial_print(&letra);
+    serial_print("teclado_getch()");
+    serial_print("\n");
+    serial_print("Letra recibida: ");
+    serial_send(letra);
+    serial_print("\n");
+    serial_print("-----------------------------");
+    serial_print("\n");
+
+    serial_print("teclado_getch_timeout(2000ms)");
+    serial_print("\n");
+    serial_print("------------------------------");
+    serial_print("\n");
+    serial_print("Letra recibida: ");
+    letra = teclado_getch_timeout(5000);
+    serial_send(letra);
+    serial_print("\n");
+
   }
 }

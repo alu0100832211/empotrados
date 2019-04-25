@@ -87,13 +87,17 @@ int main (void){
   sieteSeg_init();
   serial_init();
   unsigned short data = 0;
+  unsigned short last_data = 0;
   while(1){
+    atd_default_config(PUERTO_ATD);
     /* Esperar a que termine la conversión */
     atd_wait_for_conversor(PUERTO_ATD);
     /* Devolver los valores leidos */
     unsigned short nConversiones;
+    last_data = data;
     atd_get_data(&data, &nConversiones, PUERTO_ATD);
     delayusg(100000UL);
+    data = (data+last_data)/2;
     serial_printdecword(data);
     serial_print("\n");
     //serial_recv();
